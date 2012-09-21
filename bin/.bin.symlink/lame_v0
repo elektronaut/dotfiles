@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+if ARGV.length < 1
+  puts "Simple wrapper for batch converting a bunch of .aiff/.wav files to hiqh quality MP3s.\n"
+  puts "Usage: #{File.basename($0)} [files]"
+end
+
+file_ending = /\.(aiff?|wav)$/
+
+files = ARGV.select{ |f| File.exist?(f) && f =~ file_ending }
+files.each do |file|
+  mp3file = file.gsub(file_ending, ".mp3")
+  puts "-----------------------------------------------------------------------------------------"
+  puts "Converting #{files.index(file)+1}/#{files.length}: #{File.basename(file)}...\n\n"
+  if File.exists?(mp3file)
+    puts "ERROR: File exists! #{mp3file}"
+    exit
+  end
+  `lame -V 0 --nohist "#{file}" "#{mp3file}"`
+end

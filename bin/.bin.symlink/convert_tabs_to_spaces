@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+# Converts indentation in a git repository from tabs to spaces.
+# Everything in vendor/plugins is ignored.
+# TODO: This should probably be rewritten to ignore
+# submodules instead.
+
+require 'find'
+
+ignore_extensions = /\.(ico|bmp|png|jpg|jpeg|gif|txt|pdf|tab|gemspec|textile|gitmodules|swf|fla|zip)$/i
+
+`git ls-files --exclude-standard`.split("\n").each do |file|
+  if File.exists?(file) && File.file?(file) && !(file =~ ignore_extensions)
+    unless file =~ /^vendor\/plugins\//
+      begin
+        file_content = File.read(file).split("\n").map{|line|
+          # Strip trailing whitespace
+          line = line.gsub(/[\n]+$/, '')
+
+          # Convert tabs to whitespace
+          line.gsub!(/^([\s\t]+)/) do |whitespace|
+            spaces = whitespace.gsub(/\t/, '')
+            tab_count = whitespace.length - spaces.length
+            spaces + ('  ' * tab_count)
+          end
+
+          line
+        }.join("\n") + "\n"
+
+        File.open(file, 'w'){|fh| fh.write(file_content)}
+      rescue
+        puts "Error converting #{file}"
+      end
+
+    end
+  end
+end
+

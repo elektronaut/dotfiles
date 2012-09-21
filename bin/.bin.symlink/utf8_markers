@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+# Adds UTF8 markers to all ruby files.
+# Everything in vendor/plugins is ignored.
+# TODO: This should probably be rewritten to ignore
+# submodules instead.
+
+require 'find'
+
+extensions = /\.(rb|rake)$/i
+
+`git ls-files --exclude-standard`.split("\n").each do |file|
+	if File.exists?(file) && File.file?(file) && file =~ extensions
+		unless file =~ /^vendor\/plugins\//
+			begin
+				file_content = File.read(file)
+				unless file_content =~ /# encoding: utf-8/
+					file_content = "# encoding: utf-8\n\n" + file_content
+					File.open(file, 'w'){|fh| fh.write(file_content)}
+				end
+			rescue
+				puts "Error converting #{file}"
+			end
+
+		end
+	end
+end
+
