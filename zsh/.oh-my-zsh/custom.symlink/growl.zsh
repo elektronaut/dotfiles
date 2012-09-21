@@ -1,0 +1,1 @@
+alias notify='growlnotify -m'
