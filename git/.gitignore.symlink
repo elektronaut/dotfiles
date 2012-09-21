@@ -1,0 +1,10 @@
+.sass-cache
+.bundle
+.rvmrc
+.rbenv-version
+.DS_Store
+.svn
+*.sublime-workspace
+*.swp
+*.swo
+
