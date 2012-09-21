@@ -21,3 +21,11 @@ To update everything including external dependencies, run
 ```sh
 update_dotfiles all
 ```
+
+## Configuring Rails environment
+
+```sh
+set_environment [environment]
+```
+
+will set your RAILS_ENV and RACK_ENV variables on the next login.
