@@ -57,7 +57,7 @@ end
 def clean_target(target)
   if File.exists?(target)
     debug_output "    Target exists, removing.."
-    File.unlink target
+    FileUtils.rm_rf target
   end
 end
 
@@ -69,10 +69,9 @@ def update_package(package)
     unless path == package_root
       filename = path.relative_path_from(package_root).to_s
 
-      # Path
-      if File.directory?(path)
-        FileUtils.mkdir_p target_for(filename)
-        debug_output "- Creating directory #{target_for(filename)}"
+      # Skip files under a symlinked dir
+      if filename =~ /\.symlink\//
+        # Do nothing
 
       # Symlinks
       elsif filename =~ /\.symlink$/
@@ -80,6 +79,11 @@ def update_package(package)
         debug_output "- Symlinking #{target_for(filename)}"
         clean_target(target_for(filename))
         FileUtils.ln_s path, target_for(filename)
+
+      # Path
+      elsif File.directory?(path)
+        FileUtils.mkdir_p target_for(filename)
+        debug_output "- Creating directory #{target_for(filename)}"
 
       # ERB templates
       elsif filename =~ /\.erb$/
