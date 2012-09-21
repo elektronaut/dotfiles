@@ -101,10 +101,38 @@ def update_package(package)
   end
 end
 
-desc "Installs or updates the dotfiles"
-task :update do
-  packages.each do |package|
-    update_package(package)
+namespace :janus do
+  desc "Install Janus"
+  task :install do
+    unless File.exists?(home_dir.join('.vim'))
+      debug_output "Installing Janus"
+      `curl -Lo- https://bit.ly/janus-bootstrap | bash`
+    end
   end
+
+  desc "Update Janus"
+  task :update do
+    if File.exists?(home_dir.join('.vim'))
+      `cd "#{home_dir.join('.vim')}" && rake`
+    else
+      puts "Janus not found, run rake janus:install."
+    end
+  end
+end
+
+namespace :update do
+  desc "Updates packages"
+  task :packages do
+    packages.each do |package|
+      update_package(package)
+    end
+  end
+end
+
+desc "Updates everything"
+task :update => [
+  'janus:install',
+  'update:packages'
+] do
   puts "dotfiles updated"
 end

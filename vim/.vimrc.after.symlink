@@ -1,0 +1,10 @@
+"Indenting and whitespace
+set autoindent
+set expandtab
+set tabstop=2 sw=2 sts=2
+
+"Word wrap off
+set nowrap
+
+"Colors
+color jellybeans
