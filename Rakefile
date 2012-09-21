@@ -20,6 +20,22 @@ class TemplateRenderer
     @secrets[key]
   end
 
+  def osx?
+    RUBY_PLATFORM.downcase.include?("darwin")
+  end
+
+  def linux?
+    RUBY_PLATFORM.downcase.include?("linux")
+  end
+
+  def rbenv?
+    system('rbenv 2>/dev/null')
+  end
+
+  def pow?
+    File.exists?(home_dir.join('.pow'))
+  end
+
   def result
     @template.result(get_binding)
   end
