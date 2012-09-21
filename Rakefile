@@ -69,12 +69,17 @@ def update_package(package)
     unless path == package_root
       filename = path.relative_path_from(package_root).to_s
 
+      # Path
+      if File.directory?(path)
+        FileUtils.mkdir_p target_for(filename)
+        puts target_for(filename)
+
       # Symlinks
-      if filename =~ /\.symlink$/
+      elsif filename =~ /\.symlink$/
         filename.gsub!(/\.symlink$/, '')
         debug_output "- Symlinking #{target_for(filename)}"
         clean_target(target_for(filename))
-        File.link path, target_for(filename)
+        FileUtils.ln_s path, target_for(filename)
 
       # ERB templates
       elsif filename =~ /\.erb$/
@@ -100,6 +105,6 @@ desc "Installs or updates the dotfiles"
 task :update do
   packages.each do |package|
     update_package(package)
-    puts "dotfiles updated"
   end
+  puts "dotfiles updated"
 end
