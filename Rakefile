@@ -72,7 +72,7 @@ def update_package(package)
       # Path
       if File.directory?(path)
         FileUtils.mkdir_p target_for(filename)
-        puts target_for(filename)
+        debug_output "- Creating directory #{target_for(filename)}"
 
       # Symlinks
       elsif filename =~ /\.symlink$/
