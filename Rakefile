@@ -150,6 +150,14 @@ namespace :update do
       update_package(package)
     end
   end
+
+  desc "Updates everything"
+  task :all => [
+    'oh_my_zsh:update',
+    'janus:update',
+    'update'
+  ] do
+  end
 end
 
 desc "Updates everything"

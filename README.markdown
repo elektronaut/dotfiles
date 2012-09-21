@@ -2,7 +2,7 @@
 
 ## Installation
 
-Warning: this will overwrite your current configuration without prejudice.
+Warning: this will overwrite your current configuration without asking.
 
 ```sh
 git clone https://github.com/elektronaut/dotfiles.git ~/.dotfiles
@@ -10,10 +10,14 @@ cd ~/.dotfiles
 rake
 ```
 
-Updating is as simple as:
+To update, run
 
 ```sh
-cd ~/.dotfiles
-git pull
-rake
+update_dotfiles
+```
+
+To update everything including external dependencies, run
+
+```sh
+update_dotfiles all
 ```
