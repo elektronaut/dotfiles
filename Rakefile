@@ -4,8 +4,6 @@ require 'fileutils'
 require 'erb'
 require 'yaml'
 
-task :default => [:update]
-
 class TemplateRenderer
   def initialize(template)
     @template = ERB.new template
@@ -122,6 +120,13 @@ namespace :oh_my_zsh do
       puts "oh-my-zsh not found, run rake oh_my_zsh:install."
     end
   end
+
+  desc "Delete oh-my-zsh"
+  task :destroy do
+    if File.exists?(home_dir.join('.oh-my-zsh'))
+      FileUtils.rm_rf(home_dir.join('.oh-my-zsh'))
+    end
+  end
 end
 
 namespace :janus do
@@ -139,6 +144,13 @@ namespace :janus do
       `cd "#{home_dir.join('.vim')}" && rake`
     else
       puts "Janus not found, run rake janus:install."
+    end
+  end
+
+  desc "Delete Janus"
+  task :destroy do
+    if File.exists?(home_dir.join('.vim'))
+      FileUtils.rm_rf(home_dir.join('.vim'))
     end
   end
 end
@@ -160,6 +172,8 @@ namespace :update do
   end
 end
 
+task :default => [:update]
+
 desc "Updates everything"
 task :update => [
   'oh_my_zsh:install',
@@ -168,3 +182,12 @@ task :update => [
 ] do
   puts "dotfiles updated"
 end
+
+desc "Install"
+task :install => [
+  'oh_my_zsh:destroy',
+  'oh_my_zsh:install',
+  'janus:destroy',
+  'janus:install',
+  'update'
+]

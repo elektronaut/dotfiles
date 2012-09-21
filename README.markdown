@@ -2,12 +2,12 @@
 
 ## Installation
 
-Warning: this will overwrite your current configuration without asking.
+Warning: this will destroy your current configuration without asking.
 
 ```sh
 git clone https://github.com/elektronaut/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-rake
+rake install
 ```
 
 To update, run
