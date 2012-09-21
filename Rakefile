@@ -105,6 +105,25 @@ def update_package(package)
   end
 end
 
+namespace :oh_my_zsh do
+  desc "Install oh-my-zsh"
+  task :install do
+    unless File.exists?(home_dir.join('.oh-my-zsh'))
+      debug_output "Installing oh-my-zsh"
+      `wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh`
+    end
+  end
+
+  desc "Update oh-my-zsh"
+  task :update do
+    if File.exists?(home_dir.join('.oh-my-zsh'))
+      `cd "#{home_dir.join('.oh-my-zsh')}" && git pull origin master`
+    else
+      puts "oh-my-zsh not found, run rake oh_my_zsh:install."
+    end
+  end
+end
+
 namespace :janus do
   desc "Install Janus"
   task :install do
@@ -135,6 +154,7 @@ end
 
 desc "Updates everything"
 task :update => [
+  'oh_my_zsh:install',
   'janus:install',
   'update:packages'
 ] do
