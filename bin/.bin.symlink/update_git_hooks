@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+git_root    = Pathname.new(ENV['HOME']).join('git')
+hook_script = git_root.join('hooks/post-receive')
+
+%w{apps gems plugins sites templates vendor}.each do |group|
+  group_dir = git_root.join(group)
+  if File.exists?(group_dir)
+    Dir.entries(group_dir).select{|r| r =~ /\.git$/}.each do |repo|
+      repo_dir = group_dir.join(repo)
+      repo_hook = repo_dir.join('hooks/post-receive')
+      if !File.exist?(repo_hook) || !File.symlink?(repo_hook)
+        puts "Installing #{repo_hook}"
+        `rm #{repo_hook}` if File.exist?(repo_hook)
+        `ln -s #{hook_script} #{repo_hook}`
+      end
+    end
+  end
+end
