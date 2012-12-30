@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'pathname'
 
 if ARGV.length < 1
   puts "Simple wrapper for batch converting a bunch of .aiff/.wav files to hiqh quality MP3s.\n"
@@ -8,15 +9,47 @@ if ARGV.length < 1
 end
 
 file_ending = /\.(aiff?|wav)$/
+number_pattern = /^([\d]+)\-/
+album_split_pattern = /\s\-\s/
 
 files = ARGV.select{ |f| File.exist?(f) && f =~ file_ending }
 files.each do |file|
-  mp3file = file.gsub(file_ending, ".mp3")
+  basename = File.basename(File.basename(file), ".*")
+  dirname  = Pathname.new(file).expand_path.dirname.to_s.split("/").last
+  mp3file  = file.gsub(file_ending, ".mp3")
+
   puts "-----------------------------------------------------------------------------------------"
   puts "Converting #{files.index(file)+1}/#{files.length}: #{File.basename(file)}...\n\n"
   if File.exists?(mp3file)
     puts "ERROR: File exists! #{mp3file}"
     exit
   end
-  `lame -V 0 --nohist "#{file}" "#{mp3file}"`
+
+  cmd = "lame -V 0 --nohist "
+
+  # Title
+  title = basename.gsub(number_pattern, '')
+  cmd += "--tt \"#{title}\" "
+
+  # Track number
+  track_number = (basename.match(number_pattern)) ? $1.to_i : nil
+  if track_number
+    cmd += "--tn #{track_number} "
+  end
+
+  # Artist/Album
+  if dirname =~ album_split_pattern
+    parts = dirname.split(album_split_pattern)
+    artist = parts.shift
+    album = parts.join(" - ")
+  else
+    artist = dirname
+    album = dirname
+  end
+  cmd += "--ta \"#{artist}\" "
+  cmd += "--tl \"#{album}\" "
+
+  # Do it
+  cmd += "\"#{file}\" \"#{mp3file}\""
+  `#{cmd}`
 end
