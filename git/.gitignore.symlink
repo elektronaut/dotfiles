@@ -2,6 +2,7 @@
 .bundle
 .rvmrc
 .rbenv-version
+.ruby-version
 .DS_Store
 .svn
 *.sublime-workspace
