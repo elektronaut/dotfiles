@@ -5,6 +5,7 @@
 .ruby-version
 .DS_Store
 .svn
+*.sublime-project
 *.sublime-workspace
 *.swp
 *.swo
