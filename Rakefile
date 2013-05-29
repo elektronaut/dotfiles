@@ -29,7 +29,7 @@ class TemplateRenderer
   end
 
   def rbenv?
-    system('rbenv 2>/dev/null')
+    ENV['RBENV'] || system('rbenv 2>/dev/null')
   end
 
   def pow?
