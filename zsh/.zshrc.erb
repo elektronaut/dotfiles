@@ -19,7 +19,7 @@ export DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git ruby rails rails3 gem node bundler)
+plugins=(git git-flow ruby rails rails3 gem node bundler)
 <% if osx? %>plugins+=(osx terminalapp brew sublime)<% end %>
 <% if pow? %>plugins+=(pow powder)<% end %>
 <% if rbenv? %>plugins+=(rbenv)<% end %>
@@ -29,8 +29,8 @@ source $ZSH/oh-my-zsh.sh
 # Customize to your needs...
 
 <% if osx? %>
-export EDITOR='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl -w'
-export GIT_EDITOR='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl -w'
+export EDITOR='/Applications/Sublime\ Text\.app/Contents/SharedSupport/bin/subl -w'
+export GIT_EDITOR='/Applications/Sublime\ Text\.app/Contents/SharedSupport/bin/subl -w'
 <% else %>
 export EDITOR='vim'
 export GIT_EDITOR='vim'
