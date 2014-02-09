@@ -35,7 +35,6 @@ To update absolutely everything, including Oh My ZSH and Janus, run:
 update_dotfiles all
 ```
 
-
 ## How it works
 
 The Rakefile is at the heart of it all. Running rake without any arguments will
