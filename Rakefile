@@ -78,7 +78,7 @@ end
 def update_package(package)
   package_root = root_dir.join(package)
   debug_output "Updating #{package}.."
-  Find.find(package_root) do |path|
+  Find.find(package_root.to_s) do |path|
     path = Pathname.new(path)
     unless path == package_root
       filename = path.relative_path_from(package_root).to_s
