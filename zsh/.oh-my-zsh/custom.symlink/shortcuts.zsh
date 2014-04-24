@@ -1,4 +1,5 @@
 sugar=~/Dev/apps/sugar
-mds=~/Dev/manualdesign/sites
+mda=~/Dev/manualdesign/apps
+mds=~/Dev/manualdesign/apps
 dgems=~/Dev/gems
 scratch=~/Dev/scratch
