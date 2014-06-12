@@ -47,16 +47,6 @@ Anything with the .symlink extension will be symlinked in. Files named .erb will
 run through ERB. The rest will be copied verbatim.
 
 
-## Configuring the Rails environment variables
-
-```sh
-set_environment [environment]
-```
-
-This will set your RAILS_ENV and RACK_ENV automatically. Ruby can't change the environment
-variables for the parent process, so you'll have to log out for the changes to take effect.
-
-
 ## Credits and thanks
 
 Organizing files by topic was inspired by [Zach Holman's dotfiles](https://github.com/holman/dotfiles).
