@@ -2,6 +2,7 @@
 .bundle
 .rvmrc
 .rbenv-version
+.yardoc
 .DS_Store
 .svn
 *.sublime-project
