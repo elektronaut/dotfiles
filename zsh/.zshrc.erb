@@ -31,6 +31,7 @@ source $ZSH/oh-my-zsh.sh
 <% if osx? %>
 export EDITOR='/Applications/Sublime\ Text\.app/Contents/SharedSupport/bin/subl -w'
 export GIT_EDITOR='/Applications/Sublime\ Text\.app/Contents/SharedSupport/bin/subl -w'
+export SSL_CERT_FILE=/usr/local/etc/openssl/certs/cert.pem
 <% else %>
 export EDITOR='vim'
 export GIT_EDITOR='vim'
