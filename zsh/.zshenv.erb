@@ -1,0 +1,8 @@
+export GOPATH="$HOME/Dev/go"
+
+export PATH=$HOME/.bin:$HOME/.rbenv/bin:/usr/local/rbenv/bin:/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin:/usr/local/mysql/bin
+
+<% if rbenv? %>
+# Load rbenv
+eval "$(rbenv init -)"
+<% end %>
