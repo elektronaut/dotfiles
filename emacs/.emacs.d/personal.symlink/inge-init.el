@@ -15,7 +15,7 @@
 
 ;; Abbreviations
 (setq-default abbrev-mode t)
-(read-abbrev-file "~/.abbrev_defs")
+(read-abbrev-file "~/.emacs.d/abbrev_defs")
 (setq save-abbrevs t)
 
 ;; Enable desktop save mode
@@ -49,12 +49,23 @@
 (global-unset-key (kbd "M-<down-mouse-1>"))
 (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
-;; Projectile
+;; Rbenv
+(require 'rbenv)
+(global-rbenv-mode)
+
+;; Ag
+(require 'wgrep-ag)
 (defun projectile-helm-ag ()
   "Search project with ag and display results in helm."
   (interactive)
   (helm-ag (projectile-project-root)))
 (global-set-key (kbd "C-c p s S") 'projectile-helm-ag)
+
+;; Project explorer
+(global-set-key (kbd "C-c p x") 'project-explorer-open)
+
+;; Calendar
+(setq calendar-week-start-day 1)
 
 (provide 'inge-init)
 ;;; inge-init.el ends here
