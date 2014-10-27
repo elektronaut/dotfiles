@@ -2,7 +2,6 @@
 	name = Inge Jørgensen
 	email = inge@manualdesign.no
 [core]
-	editor = mate
 	excludesfile = ~/.gitignore
 	quotepath = false
 [color]
@@ -12,7 +11,9 @@
 	status = auto
 [github]
 	user = elektronaut
-	token = <%= secret :github_token %>
+        token = <%= secret :github_token %>
+[push]
+        default = simple
 [alias]
   todo = grep -n -e TODO -e FIXME
 	unpush = push -f origin "HEAD^:master"
