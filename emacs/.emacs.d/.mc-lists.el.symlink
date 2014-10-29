@@ -15,7 +15,9 @@
         ace-window
         describe-key-briefly
         helm-mini
+        ibuffer
         keyboard-escape-quit
         kmacro-end-or-call-macro
+        wgrep-finish-edit
         winner-undo
         ))
