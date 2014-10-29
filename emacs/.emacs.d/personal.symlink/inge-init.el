@@ -7,6 +7,7 @@
 (setq-default line-spacing 2)
 
 ;; Theme
+(disable-theme 'zenburn)
 (load-theme 'sanityinc-tomorrow-night t)
 
 ;; Whitespace
@@ -20,6 +21,9 @@
 
 ;; Enable desktop save mode
 (desktop-save-mode 1)
+
+;; Prelude
+(setq prelude-auto-save nil)
 
 ;; Input config
 (setq default-input-method "MacOSX")
@@ -48,6 +52,9 @@
 (global-set-key (kbd "C-S-n") 'mc/mark-next-like-this)
 (global-unset-key (kbd "M-<down-mouse-1>"))
 (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+
+;; Join lines
+(global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
 
 ;; Rbenv
 (require 'rbenv)

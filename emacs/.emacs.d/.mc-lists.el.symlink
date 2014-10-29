@@ -16,5 +16,6 @@
         describe-key-briefly
         helm-mini
         keyboard-escape-quit
+        kmacro-end-or-call-macro
         winner-undo
         ))
