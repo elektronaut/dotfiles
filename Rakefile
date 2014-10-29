@@ -20,6 +20,10 @@ class TemplateRenderer
     @secrets[key]
   end
 
+  def git2?
+    `git --version` =~ /^git version 2\./
+  end
+
   def osx?
     RUBY_PLATFORM.downcase.include?("darwin")
   end

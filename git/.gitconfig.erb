@@ -12,8 +12,10 @@
 [github]
 	user = elektronaut
         token = <%= secret :github_token %>
+<% if git2? %>
 [push]
         default = simple
+<% end %>
 [alias]
   todo = grep -n -e TODO -e FIXME
 	unpush = push -f origin "HEAD^:master"
