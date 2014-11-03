@@ -15,6 +15,7 @@
  '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#d9d9d9")
  '(global-ede-mode t)
+ '(safe-local-variable-values (quote ((encoding . utf-8))))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

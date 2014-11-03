@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        coffee-dedent-line-backspace
         kill-region
         prelude-move-beginning-of-line
         sp--self-insert-command
@@ -16,8 +17,10 @@
         describe-key-briefly
         helm-mini
         ibuffer
+        ido-kill-buffer
         keyboard-escape-quit
         kmacro-end-or-call-macro
+        save-some-buffers
         wgrep-finish-edit
         winner-undo
         ))
