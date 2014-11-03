@@ -74,5 +74,17 @@
 ;; Calendar
 (setq calendar-week-start-day 1)
 
+;; Kill buffers
+(defun kill-all-buffers ()
+  "Kill all buffers"
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
+
+(defun kill-other-buffers ()
+  "Kill all other buffers"
+  (interactive)
+  (mapc 'kill-buffer (cdr (buffer-list (current-buffer)))))
+
+
 (provide 'inge-init)
 ;;; inge-init.el ends here
