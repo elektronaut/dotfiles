@@ -1,0 +1,216 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'pathname'
+require 'terminal-table'
+require 'term/ansicolor'
+require 'open-uri'
+require 'json'
+require 'yaml'
+
+class RailsVersion
+  class << self
+    def latest_versions
+      tree_to_list(version_tree)
+    end
+
+    def supported_versions
+      supported = version_tree
+      current_major = supported.keys.max
+      previous_major = supported.keys.select{ |v| v < current_major }.max
+      supported.delete_if { |k, v| k < previous_major }
+      supported[previous_major].delete_if { |k, v| k < supported[previous_major].keys.max }
+      tree_to_list(supported)
+    end
+
+    private
+
+    def all_versions
+      @all_versions ||= JSON.parse(open(api_url).read).map do |release|
+        release['number']
+      end
+    end
+
+    def api_url
+      'http://rubygems.org/api/v1/versions/rails.json'
+    end
+
+    def tree_to_list(tree)
+      tree.flat_map do |major, minors|
+        minors.map do |minor, patches|
+          "#{major}.#{minor}.#{patches.keys.max}"
+        end
+      end
+    end
+
+    def version_tree
+      all_versions.inject(Hash.new) do |versions, version|
+        major, minor, patch, pre = version.split(".")
+        versions[major.to_i] ||= {}
+        versions[major.to_i][minor.to_i] ||= {}
+        versions[major.to_i][minor.to_i][patch.to_i] ||= []
+        versions[major.to_i][minor.to_i][patch.to_i] << pre if pre
+        versions
+      end
+    end
+  end
+
+  def initialize(version)
+    @version = version
+    @major, @minor, @patch, @pre = version.split(".")
+  end
+
+  def latest?
+    self.class.latest_versions.include?(@version)
+  end
+
+  def supported?
+    self.class.supported_versions.each do |v|
+      major, minor, _ = v.split(".")
+      return true if major == @major && minor == @minor
+    end
+    false
+  end
+
+  def to_s
+    @version
+  end
+end
+
+class String
+  include Term::ANSIColor
+end
+
+class Project
+  def initialize(path)
+    @path = path
+  end
+
+  def name
+    @path.basename
+  end
+
+  def rails_version
+    if gem?('rails')
+      RailsVersion.new(gem_version('rails'))
+    end
+  end
+
+  def ruby_version
+    @ruby_version ||= read_file('.ruby-version')
+  end
+
+  def gem?(gem)
+    gems.keys.include?(gem)
+  end
+
+  def gem_version(gem)
+    gems[gem] if gem?(gem)
+  end
+
+  def production_host
+    if file_exist?('config/deploy/production.rb')
+      read_file('config/deploy/production.rb').match(/^server ['"]([\w\d\-\.]+)['"]/)[1]
+    elsif file_exist?('config/deploy.rb')
+      read_file('config/deploy.rb').match(/^set :remote_host, ['"]([\w\d\-\.]+)['"]/)[1]
+    end
+  end
+
+  private
+
+  def gems
+    @gems ||= begin
+      if gem_file = read_file('Gemfile.lock')
+        lines = gem_file.split("\n").select { |l| l =~ /^    \w/ }
+        lines.inject(Hash.new) do |versions, line|
+          name = line.match(/([\w\d\-_]+)/)[1]
+          version = line.match(/\(([\w\d\.]+( [\w\d]+)?)\)/)[1]
+          versions[name] = version
+          versions
+        end
+      else
+        {}
+      end
+    end
+  end
+
+  def file_exist?(file_path)
+    File.exist?(@path.join(file_path))
+  end
+
+  def read_file(file_path)
+    if file_exist?(file_path)
+      File.read(@path.join(file_path)).chomp
+    end
+  end
+end
+
+class AppStatus
+  def initialize(root)
+    @root = Pathname.new(root).expand_path
+  end
+
+  def projects
+    @projects ||= @root.entries.select do |p|
+      File.directory?(p) &&
+        p.basename.to_s =~ /^[^\.]/
+    end.map { |path| Project.new(path) }
+  end
+
+  def formatted_ruby_version(p)
+    v = p.ruby_version
+    if v == "2.1.0"
+      v.green
+    elsif v =~ /^2\./
+      v.yellow
+    elsif v
+      v.red
+    end
+  end
+
+  def formatted_rails_version(p)
+    if v = p.rails_version
+      if v.latest? && v.supported?
+        v.to_s.green
+      elsif v.supported?
+        v.to_s.yellow
+      else
+        v.to_s.red
+      end
+    end
+  end
+
+  def formatted_capistrano_version(p)
+    v = p.gem_version('capistrano')
+    if v =~ /^3\./
+      v.green
+    elsif v
+      v.yellow
+    end
+  end
+
+  def table_rows
+    projects.map do |p|
+      [
+        p.name,
+        formatted_ruby_version(p),
+        formatted_rails_version(p),
+        formatted_capistrano_version(p),
+        p.gem_version('pages_core'),
+        p.production_host.to_s.white.gsub('.cloud.manualdesign.no'){ |s| s.reset }
+      ]
+    end
+  end
+
+  def table
+    table = Terminal::Table.new(
+      headings: [
+        'Project', 'Ruby', 'Rails', 'Capistrano', 'Pages', 'Production host'
+      ],
+      rows: table_rows
+    )
+    table
+  end
+end
+
+puts AppStatus.new(".").table
