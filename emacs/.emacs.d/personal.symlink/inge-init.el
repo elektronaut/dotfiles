@@ -8,7 +8,11 @@
 
 ;; Theme
 (disable-theme 'zenburn)
-(load-theme 'sanityinc-tomorrow-night t)
+(load-theme 'monokai t)
+
+;; Powerline
+(require 'powerline)
+(powerline-default-theme)
 
 ;; Whitespace
 (setq-default indent-tabs-mode nil)
@@ -21,6 +25,9 @@
 
 ;; Enable desktop save mode
 (desktop-save-mode 1)
+
+;; Automatically start server
+(server-start)
 
 ;; Prelude
 (setq prelude-auto-save nil)
@@ -41,10 +48,13 @@
      (define-key flyspell-mouse-map [mouse-3] #'undefined)))
 
 ;; Window config
-(when window-system (set-frame-size (selected-frame) 190 48))
-(add-to-list 'default-frame-alist '(width . 190))
-(add-to-list 'default-frame-alist '(height . 48))
+;(when window-system (set-frame-size (selected-frame) 190 48))
+;(add-to-list 'default-frame-alist '(width . 190))
+;(add-to-list 'default-frame-alist '(height . 48))
 (scroll-bar-mode -1)
+
+;; Yasnippet
+(yas-global-mode 1)
 
 ;; Multiple cursors
 (require 'multiple-cursors)
@@ -74,17 +84,31 @@
 ;; Calendar
 (setq calendar-week-start-day 1)
 
+;; Apache
+(autoload 'apache-mode "apache-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.htaccess\\'"   . apache-mode))
+(add-to-list 'auto-mode-alist '("httpd\\.conf\\'"  . apache-mode))
+(add-to-list 'auto-mode-alist '("apache\\.conf\\'"  . apache-mode))
+(add-to-list 'auto-mode-alist '("srm\\.conf\\'"    . apache-mode))
+(add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
+(add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
+
 ;; Kill buffers
 (defun kill-all-buffers ()
-  "Kill all buffers"
+  "Kill all buffers."
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
 (defun kill-other-buffers ()
-  "Kill all other buffers"
+  "Kill all other buffers."
   (interactive)
   (mapc 'kill-buffer (cdr (buffer-list (current-buffer)))))
 
+(defun kill-everything ()
+  "Kill all buffers and windows."
+  (interactive)
+  (kill-all-buffers)
+  (delete-other-windows))
 
 (provide 'inge-init)
 ;;; inge-init.el ends here

@@ -4,10 +4,14 @@
 (setq mc/cmds-to-run-for-all
       '(
         coffee-dedent-line-backspace
+        easy-kill
         kill-region
+        prelude-kill-whole-line
         prelude-move-beginning-of-line
         sp--self-insert-command
         sp-backward-delete-char
+        subword-left
+        subword-right
         ))
 
 (setq mc/cmds-to-run-once
@@ -15,6 +19,7 @@
         ace-jump-done
         ace-window
         describe-key-briefly
+        handle-switch-frame
         helm-mini
         ibuffer
         ido-kill-buffer
