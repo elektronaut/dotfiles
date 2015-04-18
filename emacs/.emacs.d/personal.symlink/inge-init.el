@@ -3,12 +3,14 @@
 ;;; Code:
 
 ;; Typography
-(custom-set-faces '(default ((t (:height 130 :family "Consolas")))))
+(custom-set-faces '(default ((t (:height 130 :family "Consolas"))))
+                  '(variable-pitch ((t (:height 130 :family "Consolas")))))
 (setq-default line-spacing 2)
 
 ;; Theme
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (disable-theme 'zenburn)
-(load-theme 'monokai t)
+(load-theme 'kensho t)
 
 ;; Powerline
 (require 'powerline)
@@ -39,6 +41,19 @@
       mac-control-modifier 'control
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
+(setq mouse-wheel-scroll-amount '(0.01))
+
+;; Disable bell when scrolling
+(defun inge-bell-function ()
+  (unless (memq this-command
+                '(isearch-abort abort-recursive-edit exit-minibuffer
+                                keyboard-quit mwheel-scroll down up next-line previous-line
+                                backward-char forward-char))
+    (ding)))
+(setq ring-bell-function 'inge-bell-function)
+
+;; Org-mode
+(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
 ;; Flyspell
 (require 'flyspell)
@@ -51,6 +66,7 @@
 ;(when window-system (set-frame-size (selected-frame) 190 48))
 ;(add-to-list 'default-frame-alist '(width . 190))
 ;(add-to-list 'default-frame-alist '(height . 48))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (scroll-bar-mode -1)
 
 ;; Yasnippet
@@ -66,17 +82,31 @@
 ;; Join lines
 (global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
 
+;; Ruby
+(setq enh-ruby-bounce-deep-indent t)
+(add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+(add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
+
 ;; Rbenv
 (require 'rbenv)
 (global-rbenv-mode)
 
+;; Web mode
+(defun inge/web-mode-hook ()
+  "Hooks for web mode."
+  (setq web-mode-markup-indent-offset 2))
+(add-hook 'web-mode-hook 'inge/web-mode-hook)
+(add-to-list 'auto-mode-alist '("\\.mustache$" . web-mode))
+
+;; MIT Scheme
+(setenv "MITSCHEME_LIBRARY_PATH"  "/Applications/MIT-Scheme.app/Contents/Resources")
+
 ;; Ag
 (require 'wgrep-ag)
-(defun projectile-helm-ag ()
-  "Search project with ag and display results in helm."
-  (interactive)
-  (helm-ag (projectile-project-root)))
-(global-set-key (kbd "C-c p s S") 'projectile-helm-ag)
+(global-set-key (kbd "C-c p s S") 'projectile-ag)
+
+;; Company
+(global-set-key (kbd "<C-tab>") 'company-complete)
 
 ;; Project explorer
 (global-set-key (kbd "C-c p x") 'project-explorer-open)
@@ -92,6 +122,20 @@
 (add-to-list 'auto-mode-alist '("srm\\.conf\\'"    . apache-mode))
 (add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
 (add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
+
+;; SCSS mode
+(add-to-list 'auto-mode-alist '("\\.scss.erb" . scss-mode))
+
+;; Toggle comment on region or line
+(defun comment-or-uncomment-region-or-line ()
+  "Comments or uncomments the region or the current line if there's no active region."
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+        (setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (comment-or-uncomment-region beg end)))
+(global-set-key (kbd "C-M-,") 'comment-or-uncomment-region-or-line)
 
 ;; Kill buffers
 (defun kill-all-buffers ()

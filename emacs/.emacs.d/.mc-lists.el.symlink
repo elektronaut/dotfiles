@@ -6,12 +6,14 @@
         coffee-dedent-line-backspace
         easy-kill
         kill-region
+        markdown-exdent-or-delete
         prelude-kill-whole-line
         prelude-move-beginning-of-line
         sp--self-insert-command
         sp-backward-delete-char
         subword-left
         subword-right
+        yaml-electric-dash-and-dot
         ))
 
 (setq mc/cmds-to-run-once
@@ -19,13 +21,19 @@
         ace-jump-done
         ace-window
         describe-key-briefly
+        exit-recursive-edit
         handle-switch-frame
+        helm-confirm-and-exit-minibuffer
         helm-mini
         ibuffer
         ido-kill-buffer
         keyboard-escape-quit
         kmacro-end-or-call-macro
+        mark-whole-buffer
+        prelude-swap-meta-and-super
+        rspec-verify
         save-some-buffers
         wgrep-finish-edit
         winner-undo
+        yaml-electric-backspace
         ))

@@ -15,6 +15,8 @@
  '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#d9d9d9")
  '(global-ede-mode t)
+ '(json-reformat:indent-width 2)
+ '(magit-use-overlays nil)
  '(safe-local-variable-values (quote ((encoding . utf-8))))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
@@ -37,10 +39,12 @@
      (320 . "#DCA432")
      (340 . "#ebcb8b")
      (360 . "#B4EB89"))))
- '(vc-annotate-very-old-color nil))
+ '(vc-annotate-very-old-color nil)
+ '(web-mode-markup-indent-offset 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 130 :family "Consolas")))))
+ '(default ((t (:height 130 :family "Consolas"))))
+ '(variable-pitch ((t (:height 130 :family "Verdana")))))
