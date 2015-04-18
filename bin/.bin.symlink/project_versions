@@ -46,10 +46,12 @@ class RailsVersion
     def version_tree
       all_versions.inject(Hash.new) do |versions, version|
         major, minor, patch, pre = version.split(".")
-        versions[major.to_i] ||= {}
-        versions[major.to_i][minor.to_i] ||= {}
-        versions[major.to_i][minor.to_i][patch.to_i] ||= []
-        versions[major.to_i][minor.to_i][patch.to_i] << pre if pre
+        unless pre
+          versions[major.to_i] ||= {}
+          versions[major.to_i][minor.to_i] ||= {}
+          versions[major.to_i][minor.to_i][patch.to_i] ||= []
+          #versions[major.to_i][minor.to_i][patch.to_i] << pre if pre
+        end
         versions
       end
     end
