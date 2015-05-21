@@ -123,6 +123,14 @@
 (add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
 (add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
 
+;; Web mode
+
+(defun inge-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-script-padding 2)
+  (setq web-mode-style-padding 2))
+(add-hook 'web-mode-hook  'inge-web-mode-hook)
+
 ;; SCSS mode
 (add-to-list 'auto-mode-alist '("\\.scss.erb" . scss-mode))
 
@@ -153,6 +161,49 @@
   (interactive)
   (kill-all-buffers)
   (delete-other-windows))
+
+(defun region-to-hexcol ()
+  (interactive)
+  (let
+      ((start (region-beginning))
+       (end (region-end))
+       (text))
+
+    (setq text (buffer-substring-no-properties start end))
+
+    (when (string-match "^[[:digit:]]+$" text)
+      (setq text (format "%02x" (string-to-number text)))
+      (delete-region start end)
+      (insert text))))
+
+(defun rgb-to-hex ()
+  (interactive)
+
+  (let
+      ((start (region-beginning))
+       (end (region-end)))
+
+    (goto-char start)
+    (set-mark start)
+    (skip-chars-forward "0-9")
+    (region-to-hexcol)
+
+    (skip-chars-forward ", ")
+    (set-mark (point))
+    (skip-chars-forward "0-9")
+    (region-to-hexcol)
+
+    (skip-chars-forward ", ")
+    (set-mark (point))
+    (skip-chars-forward "0-9")
+    (region-to-hexcol)
+
+    (setq end (point))
+    (goto-char start)
+
+    (save-restriction
+      (narrow-to-region start end)
+      (while (re-search-forward "[, ]" nil t) (replace-match "" nil t)))))
 
 (provide 'inge-init)
 ;;; inge-init.el ends here

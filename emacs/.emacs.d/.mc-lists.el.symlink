@@ -23,6 +23,7 @@
         describe-key-briefly
         exit-recursive-edit
         handle-switch-frame
+        helm-M-x
         helm-confirm-and-exit-minibuffer
         helm-mini
         ibuffer
