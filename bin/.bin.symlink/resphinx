@@ -1,0 +1,8 @@
+#!/bin/bash
+
+bundle exec rake ts:stop RAILS_ENV=development
+rm -rf tmp/binlog
+rm -rf db/sphinx
+bundle exec rake ts:configure RAILS_ENV=development
+bundle exec rake ts:start RAILS_ENV=development
+bundle exec rake ts:generate RAILS_ENV=development
