@@ -161,7 +161,7 @@ class AppStatus
 
   def formatted_ruby_version(p)
     v = p.ruby_version
-    if v == "2.1.0"
+    if v =~ /^2\.2\./
       v.green
     elsif v =~ /^2\./
       v.yellow
