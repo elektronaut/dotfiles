@@ -5,15 +5,18 @@
       '(
         coffee-dedent-line-backspace
         easy-kill
+        enh-ruby-electric-brace
         kill-region
         markdown-exdent-or-delete
         prelude-kill-whole-line
         prelude-move-beginning-of-line
+        ruby-tools-interpolate
         sp--self-insert-command
         sp-backward-delete-char
         subword-left
         subword-right
         yaml-electric-dash-and-dot
+        yas-expand
         ))
 
 (setq mc/cmds-to-run-once
@@ -26,6 +29,7 @@
         helm-M-x
         helm-confirm-and-exit-minibuffer
         helm-mini
+        helm-show-kill-ring
         ibuffer
         ido-kill-buffer
         keyboard-escape-quit
