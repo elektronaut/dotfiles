@@ -195,7 +195,7 @@ task default: [:update]
 desc "Updates everything"
 task update: [
   "oh_my_zsh:install",
-  "janus:install",
+  # "janus:install",
   "update:packages"
 ] do
   puts "dotfiles updated"
@@ -205,7 +205,7 @@ desc "Install"
 task install: [
   "oh_my_zsh:destroy",
   "oh_my_zsh:install",
-  "janus:destroy",
-  "janus:install",
+  # "janus:destroy",
+  # "janus:install",
   "update"
 ]
