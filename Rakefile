@@ -1,8 +1,8 @@
-require 'pathname'
-require 'find'
-require 'fileutils'
-require 'erb'
-require 'yaml'
+require "pathname"
+require "find"
+require "fileutils"
+require "erb"
+require "yaml"
 
 class TemplateRenderer
   def initialize(template)
@@ -14,8 +14,8 @@ class TemplateRenderer
   end
 
   def secret(key)
-    secrets_file = root_dir.join('secrets.yml')
-    return '' unless File.exists?(secrets_file)
+    secrets_file = root_dir.join("secrets.yml")
+    return "" unless File.exist?(secrets_file)
     @secrets ||= YAML.load_file(secrets_file)
     @secrets[key]
   end
@@ -33,11 +33,11 @@ class TemplateRenderer
   end
 
   def rbenv?
-    ENV['RBENV'] || system('rbenv 2>/dev/null')
+    ENV["RBENV"] || system("rbenv 2>/dev/null")
   end
 
   def pow?
-    File.exists?(home_dir.join('.pow'))
+    File.exists?(home_dir.join(".pow"))
   end
 
   def result
@@ -46,7 +46,7 @@ class TemplateRenderer
 end
 
 def debug?
-  ENV['DEBUG']
+  ENV["DEBUG"]
 end
 
 def debug_output(string)
@@ -58,7 +58,7 @@ def root_dir
 end
 
 def home_dir
-  Pathname.new(ENV['HOME'])
+  Pathname.new(ENV["HOME"])
 end
 
 def target_for(relative_path)
@@ -73,10 +73,9 @@ def packages
 end
 
 def clean_target(target)
-  if File.exists?(target)
-    debug_output "    Target exists, removing.."
-    FileUtils.rm_rf target
-  end
+  return unless File.exist?(target)
+  debug_output "    Target exists, removing.."
+  FileUtils.rm_rf target
 end
 
 def update_package(package)
@@ -93,7 +92,7 @@ def update_package(package)
 
       # Symlinks
       elsif filename =~ /\.symlink$/
-        filename.gsub!(/\.symlink$/, '')
+        filename.gsub!(/\.symlink$/, "")
         debug_output "- Symlinking #{target_for(filename)}"
         clean_target(target_for(filename))
         FileUtils.ln_s path, target_for(filename)
@@ -105,11 +104,11 @@ def update_package(package)
 
       # ERB templates
       elsif filename =~ /\.erb$/
-        filename.gsub!(/\.erb$/, '')
+        filename.gsub!(/\.erb$/, "")
         debug_output "- Generating #{target_for(filename)}"
         clean_target(target_for(filename))
         template = TemplateRenderer.new File.read(path)
-        File.open(target_for(filename), 'w') do |fh|
+        File.open(target_for(filename), "w") do |fh|
           fh.write template.result
         end
 
@@ -126,7 +125,7 @@ end
 namespace :oh_my_zsh do
   desc "Install oh-my-zsh"
   task :install do
-    unless File.exists?(home_dir.join('.oh-my-zsh'))
+    unless File.exist?(home_dir.join(".oh-my-zsh"))
       debug_output "Installing oh-my-zsh"
       `wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh`
     end
@@ -134,8 +133,8 @@ namespace :oh_my_zsh do
 
   desc "Update oh-my-zsh"
   task :update do
-    if File.exists?(home_dir.join('.oh-my-zsh'))
-      `cd "#{home_dir.join('.oh-my-zsh')}" && git pull origin master`
+    if File.exist?(home_dir.join(".oh-my-zsh"))
+      `cd "#{home_dir.join(".oh-my-zsh")}" && git pull origin master`
     else
       puts "oh-my-zsh not found, run rake oh_my_zsh:install."
     end
@@ -143,8 +142,8 @@ namespace :oh_my_zsh do
 
   desc "Delete oh-my-zsh"
   task :destroy do
-    if File.exists?(home_dir.join('.oh-my-zsh'))
-      FileUtils.rm_rf(home_dir.join('.oh-my-zsh'))
+    if File.exist?(home_dir.join(".oh-my-zsh"))
+      FileUtils.rm_rf(home_dir.join(".oh-my-zsh"))
     end
   end
 end
@@ -152,7 +151,7 @@ end
 namespace :janus do
   desc "Install Janus"
   task :install do
-    unless File.exists?(home_dir.join('.vim'))
+    unless File.exist?(home_dir.join(".vim"))
       debug_output "Installing Janus"
       `curl -Lo- https://bit.ly/janus-bootstrap | bash`
     end
@@ -160,8 +159,8 @@ namespace :janus do
 
   desc "Update Janus"
   task :update do
-    if File.exists?(home_dir.join('.vim'))
-      `cd "#{home_dir.join('.vim')}" && rake`
+    if File.exist?(home_dir.join(".vim"))
+      `cd "#{home_dir.join(".vim")}" && rake`
     else
       puts "Janus not found, run rake janus:install."
     end
@@ -169,9 +168,8 @@ namespace :janus do
 
   desc "Delete Janus"
   task :destroy do
-    if File.exists?(home_dir.join('.vim'))
-      FileUtils.rm_rf(home_dir.join('.vim'))
-    end
+    return unless File.exist?(home_dir.join(".vim"))
+    FileUtils.rm_rf(home_dir.join(".vim"))
   end
 end
 
@@ -184,30 +182,30 @@ namespace :update do
   end
 
   desc "Updates everything"
-  task :all => [
-    'oh_my_zsh:update',
-    'janus:update',
-    'update'
+  task all: [
+    "oh_my_zsh:update",
+    "janus:update",
+    "update"
   ] do
   end
 end
 
-task :default => [:update]
+task default: [:update]
 
 desc "Updates everything"
-task :update => [
-  'oh_my_zsh:install',
-  'janus:install',
-  'update:packages'
+task update: [
+  "oh_my_zsh:install",
+  "janus:install",
+  "update:packages"
 ] do
   puts "dotfiles updated"
 end
 
 desc "Install"
-task :install => [
-  'oh_my_zsh:destroy',
-  'oh_my_zsh:install',
-  'janus:destroy',
-  'janus:install',
-  'update'
+task install: [
+  "oh_my_zsh:destroy",
+  "oh_my_zsh:install",
+  "janus:destroy",
+  "janus:install",
+  "update"
 ]
