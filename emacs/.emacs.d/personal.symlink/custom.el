@@ -15,8 +15,12 @@
  '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#d9d9d9")
  '(global-ede-mode t)
+ '(js2-basic-offset 2)
  '(json-reformat:indent-width 2)
  '(magit-use-overlays nil)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(safe-local-variable-values (quote ((encoding . utf-8))))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map

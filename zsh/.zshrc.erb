@@ -28,6 +28,9 @@ source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 
+export HISTSIZE=512000
+export SAVEHIST=512000
+
 <% if osx? %>
 export GIT_EDITOR=$EDITOR
 export SSL_CERT_FILE=/usr/local/etc/openssl/certs/cert.pem

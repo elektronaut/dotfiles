@@ -13,6 +13,7 @@
         ruby-tools-interpolate
         sp--self-insert-command
         sp-backward-delete-char
+        sp-forward-slurp-sexp
         subword-left
         subword-right
         yaml-electric-dash-and-dot

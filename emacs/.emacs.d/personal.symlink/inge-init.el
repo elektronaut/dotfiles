@@ -147,6 +147,9 @@
 (add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
 (add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
 
+;; Helm
+(add-to-list 'projectile-globally-ignored-directories "import/site")
+
 ;; Web mode
 
 (defun inge-web-mode-hook ()
@@ -353,8 +356,8 @@
     :foreground "black" :background "#eab700")
 
 
-
-
+;; Transparency
+;;(set-frame-parameter (selected-frame) 'alpha '(95 95))
 
 (provide 'inge-init)
 ;;; inge-init.el ends here
