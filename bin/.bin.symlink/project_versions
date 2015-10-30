@@ -32,7 +32,7 @@ class RailsVersion
     end
 
     def api_url
-      'http://rubygems.org/api/v1/versions/rails.json'
+      'https://rubygems.org/api/v1/versions/rails.json'
     end
 
     def tree_to_list(tree)
