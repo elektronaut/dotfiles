@@ -6,6 +6,7 @@
         coffee-dedent-line-backspace
         easy-kill
         enh-ruby-electric-brace
+        fill-paragraph
         kill-region
         markdown-exdent-or-delete
         prelude-kill-whole-line
@@ -24,6 +25,7 @@
       '(
         ace-jump-done
         ace-window
+        beginning-of-buffer
         describe-key-briefly
         exit-recursive-edit
         handle-switch-frame
@@ -36,6 +38,7 @@
         keyboard-escape-quit
         kmacro-end-or-call-macro
         mark-whole-buffer
+        mouse-buffer-menu
         prelude-swap-meta-and-super
         rspec-verify
         save-some-buffers

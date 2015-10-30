@@ -12,9 +12,10 @@
 
 ;; Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/atom-one-dark-theme")
 (disable-theme 'zenburn)
-(load-theme 'kensho t)
-;;(load-theme 'atom-dark t)
+;;(load-theme 'kensho t)
+(load-theme 'atom-one-dark t)
 
 ;; Powerline
 ;;(require 'powerline)
@@ -78,6 +79,7 @@
 
 ;; Org-mode
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+(setq org-replace-disputed-keys t)
 
 ;; Flyspell
 (require 'flyspell)
@@ -95,6 +97,9 @@
 
 ;; Yasnippet
 (yas-global-mode 1)
+
+;; Cursor
+(setq-default cursor-type 'bar)
 
 ;; Multiple cursors
 (require 'multiple-cursors)
@@ -314,46 +319,46 @@
 (make-face 'mode-line-80col-face)
 
 (set-face-attribute 'mode-line nil
-    :foreground "gray60" :background "gray10"
+    :foreground "#ABB2BF" :background "#121417"
     :inverse-video nil
-    :box '(:line-width 6 :color "gray10" :style nil))
+    :box '(:line-width 6 :color "#121417" :style nil))
 (set-face-attribute 'mode-line-inactive nil
-    :foreground "gray80" :background "gray20"
+    :foreground "#ABB2BF" :background "#3E4451"
     :inverse-video nil
-    :box '(:line-width 6 :color "gray20" :style nil))
+    :box '(:line-width 6 :color "#3E4451" :style nil))
 
 (set-face-attribute 'mode-line-read-only-face nil
     :inherit 'mode-line-face
-    :foreground "#4271ae"
-    :box '(:line-width 2 :color "#4271ae"))
+    :foreground "#528BFF"
+    :box '(:line-width 2 :color "#528BFF"))
 (set-face-attribute 'mode-line-modified-face nil
     :inherit 'mode-line-face
-    :foreground "#c82829"
+    :foreground "#BE5046"
     :background "#ffffff"
-    :box '(:line-width 2 :color "#c82829"))
+    :box '(:line-width 2 :color "#BE5046"))
 (set-face-attribute 'mode-line-folder-face nil
     :inherit 'mode-line-face
-    :foreground "gray60")
+    :foreground "#828997")
 (set-face-attribute 'mode-line-filename-face nil
     :inherit 'mode-line-face
-    :foreground "#eab700"
+    :foreground "#E5C07B"
     :weight 'bold)
 (set-face-attribute 'mode-line-position-face nil
     :inherit 'mode-line-face
     :family "Menlo" :height 100)
 (set-face-attribute 'mode-line-mode-face nil
     :inherit 'mode-line-face
-    :foreground "gray80")
+    :foreground "#ABB2BF")
 (set-face-attribute 'mode-line-minor-mode-face nil
     :inherit 'mode-line-mode-face
-    :foreground "gray40"
+    :foreground "#828997"
     :height 110)
 (set-face-attribute 'mode-line-process-face nil
     :inherit 'mode-line-face
-    :foreground "#718c00")
+    :foreground "#98C379")
 (set-face-attribute 'mode-line-80col-face nil
     :inherit 'mode-line-position-face
-    :foreground "black" :background "#eab700")
+    :foreground "black" :background "#E5C07B")
 
 
 ;; Transparency
