@@ -15,9 +15,7 @@
  '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#d9d9d9")
  '(global-ede-mode t)
- '(js2-basic-offset 2)
  '(json-reformat:indent-width 2)
- '(magit-use-overlays nil)
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
@@ -43,8 +41,7 @@
      (320 . "#DCA432")
      (340 . "#ebcb8b")
      (360 . "#B4EB89"))))
- '(vc-annotate-very-old-color nil)
- '(web-mode-markup-indent-offset 2))
+ '(vc-annotate-very-old-color nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
