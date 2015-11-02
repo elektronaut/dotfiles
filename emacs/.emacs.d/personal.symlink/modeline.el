@@ -31,7 +31,7 @@
           (t "      ")))
    "    "
    ; directory and buffer/file name
-   (:propertize (:eval (shorten-directory default-directory 30))
+   (:propertize (:eval (if buffer-file-name (shorten-directory default-directory 30)))
                 face mode-line-folder-face)
    (:propertize "%b"
                 face mode-line-filename-face)
@@ -50,7 +50,8 @@
    (global-mode-string global-mode-string)
    "    "
    ; nyan-mode uses nyan cat as an alternative to %p
-   ;(:eval (when nyan-mode (list (nyan-create))))
+   (:eval (when nyan-mode (list (nyan-create))))
+   " %p "
    ))
 
 ;; Helper function

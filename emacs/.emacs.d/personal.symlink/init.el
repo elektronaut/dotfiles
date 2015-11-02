@@ -37,10 +37,10 @@
 ;;-----------------------------------------------------------------------------
 
 ;; Typography
-(custom-set-faces
- '(default        ((t (:height 130 :family "Inconsolata"))))
- '(variable-pitch ((t (:height 130 :family "Inconsolata")))))
+(set-face-attribute 'default        nil :family "Inconsolata" :height 130)
+(set-face-attribute 'variable-pitch nil :family "Inconsolata" :height 130)
 (setq-default line-spacing 2)
+
 
 ;; Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
@@ -206,6 +206,10 @@
 (use-package project-explorer
   :bind (("C-c p x" . project-explorer-open)))
 
+(use-package projectile-rails
+  :init
+  (add-hook 'projectile-mode-hook 'projectile-rails-on))
+
 (use-package rbenv
   :init
   (global-rbenv-mode))
@@ -213,10 +217,6 @@
 (use-package scss-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.scss.erb" . scss-mode)))
-
-(use-package tramp
-  :init
-  (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash")))
 
 (use-package web-mode
   :init
@@ -244,6 +244,8 @@
 (global-set-key (kbd "C-M-,") 'comment-or-uncomment-region-or-line)
 (global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
 (global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
+(global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
+(global-set-key (kbd "C-x w") 'helm-spaces)
 
 
 (provide 'init)
