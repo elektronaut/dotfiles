@@ -182,7 +182,7 @@ namespace :update do
   end
 
   desc "Updates everything"
-  task all: [
+  task :all => [
     "oh_my_zsh:update",
     "janus:update",
     "update"
@@ -190,10 +190,10 @@ namespace :update do
   end
 end
 
-task default: [:update]
+task :default => [:update]
 
 desc "Updates everything"
-task update: [
+task :update => [
   "oh_my_zsh:install",
   # "janus:install",
   "update:packages"
@@ -202,7 +202,7 @@ task update: [
 end
 
 desc "Install"
-task install: [
+task :install => [
   "oh_my_zsh:destroy",
   "oh_my_zsh:install",
   # "janus:destroy",
