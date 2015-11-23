@@ -4,7 +4,7 @@ export PATH=$HOME/.bin:$HOME/.rbenv/bin:/usr/local/rbenv/bin:/opt/local/bin:/opt
 
 <% if !osx? %>
   export RBENV_ROOT=/usr/local/rbenv
-  export PATH="$RBENV_ROOT/bin:$PATH"
+  export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
 <% end %>
 
 <% if rbenv? %>
