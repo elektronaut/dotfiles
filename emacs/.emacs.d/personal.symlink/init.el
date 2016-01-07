@@ -7,7 +7,8 @@
 (desktop-save-mode 1)
 
 ;; Automatically start server
-(server-start)
+(require 'server)
+(unless (server-running-p) (server-start))
 
 
 ;;-----------------------------------------------------------------------------
@@ -46,6 +47,7 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/atom-one-dark-theme")
 (load-theme 'atom-one-dark t)
+(set-mouse-color "white")
 
 ;; Cursor
 (setq-default cursor-type 'bar)
@@ -89,6 +91,8 @@
 (setq-default indent-tabs-mode nil)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(custom-set-variables '(default-major-mode 'text-mode))
+
 
 ;;-----------------------------------------------------------------------------
 ;; Built-ins
@@ -107,7 +111,8 @@
 
 ;; Org-mode
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg"
-      org-replace-disputed-keys t)
+      org-replace-disputed-keys t
+      org-src-fontify-natively t)
 
 
 ;;-----------------------------------------------------------------------------
@@ -159,9 +164,11 @@
 
 (use-package enh-ruby-mode
   :init
-  (setq enh-ruby-bounce-deep-indent t)
+  (setq-default enh-ruby-bounce-deep-indent t
+                enh-ruby-hanging-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
-  (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode))
+  (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
+  (add-hook 'enh-ruby-mode-hook 'robe-mode))
 
 (use-package flyspell
   :init
