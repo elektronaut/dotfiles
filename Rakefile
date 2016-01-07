@@ -33,7 +33,7 @@ class TemplateRenderer
   end
 
   def rbenv?
-    ENV["RBENV"] || system("rbenv 2>/dev/null")
+    ENV["RBENV"] || `which rbenv` =~ /bin\/rbenv/
   end
 
   def pow?
