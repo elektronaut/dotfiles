@@ -1,5 +1,5 @@
 sugar=~/Dev/apps/sugar
-mda=~/Dev/manualdesign/apps
+ka=~/Dev/kord/apps
 dgems=~/Dev/gems
 scratch=~/Dev/scratch
-puppet=~/Dev/manualdesign/puppet
+puppet=~/Dev/kord/puppet
