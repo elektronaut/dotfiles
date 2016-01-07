@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+["Gemfile", "Gemfile.lock"].each do |filename|
+  if File.exist?(filename)
+    content = File.read(filename)
+    new_content = content.gsub(/github\.com:manualdesign/, "github.com/kord-as")
+    if content != new_content
+      puts "Updating #{filename}"
+      File.open(filename, "w") { |fh| fh.write new_content }
+    end
+  end
+end
