@@ -170,6 +170,16 @@
   (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
   (add-hook 'enh-ruby-mode-hook 'robe-mode))
 
+(use-package flycheck
+  :init
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (setq-default flycheck-temp-prefix ".flycheck")
+  (eval-after-load "flycheck"
+    '(progn
+       (flycheck-add-mode 'javascript-eslint 'web-mode)
+       (setq-default flycheck-disabled-checkers
+                     (append flycheck-disabled-checkers '(javascript-jshint))))))
+
 (use-package flyspell
   :init
   (eval-after-load "flyspell"
