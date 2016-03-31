@@ -1,16 +1,29 @@
 #!/usr/bin/env ruby
 
-require 'irb/completion'
-require 'irb/ext/save-history'
-require 'rubygems'
+require "irb/completion"
+require "irb/ext/save-history"
+require "rubygems"
+require "pp"
+require "yaml"
 
 begin
   require "pry"
   Pry.start
   exit
-rescue LoadError => e
+rescue LoadError
   warn "=> Unable to load pry"
 end
 
 IRB.conf[:SAVE_HISTORY] = 1000
 IRB.conf[:PROMPT_MODE] = :SIMPLE
+IRB.conf[:USE_READLINE] = true
+
+def ppp(*args)
+  pp(*args)
+  nil
+end
+
+def y(obj)
+  puts obj.to_yaml
+  nil
+end
