@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        c-electric-paren
         coffee-dedent-line-backspace
         easy-kill
         enh-ruby-electric-brace
@@ -27,6 +28,7 @@
         ace-window
         beginning-of-buffer
         describe-key-briefly
+        end-of-buffer
         exit-recursive-edit
         handle-switch-frame
         helm-M-x

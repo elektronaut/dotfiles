@@ -3,7 +3,9 @@
 ["Gemfile", "Gemfile.lock"].each do |filename|
   if File.exist?(filename)
     content = File.read(filename)
-    new_content = content.gsub(/github\.com:manualdesign/, "github.com/kord-as")
+    new_content = content
+      .gsub(/github\.com\/kord-as/, "github.com:kord-as")
+      .gsub(/github\.com:manualdesign/, "github.com:kord-as")
     if content != new_content
       puts "Updating #{filename}"
       File.open(filename, "w") { |fh| fh.write new_content }
