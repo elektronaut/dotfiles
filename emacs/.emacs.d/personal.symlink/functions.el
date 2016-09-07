@@ -2,6 +2,27 @@
 ;;; Commentary:
 ;;; Code:
 
+(defun split-n (n)
+  "Split frame in N windows."
+  (let ((split-count (- n (count-windows))))
+    (if (> split-count 0) (dotimes (i split-count) (split-window-right)))
+    (if (< split-count 0) (dotimes (i (abs split-count))
+                            (other-window -1)
+                            (delete-window)
+                            (other-window 1)))
+    (unless (eq split-count 0) (balance-windows))))
+
+(defun split-2 () "Split frame in 2 windows." (interactive) (split-n 2))
+(defun split-3 () "Split frame in 3 windows." (interactive) (split-n 3))
+
+(defun auto-window-layout ()
+  "Automatically layout frame in 2 or 3 windows depending on size."
+  (interactive)
+  (if (> (frame-width) (* 3 84))
+      (split-n 3)
+      (split-n 2))
+  (balance-windows))
+
 (define-minor-mode big-font-mode
   "Enable big fonts."
   :global t

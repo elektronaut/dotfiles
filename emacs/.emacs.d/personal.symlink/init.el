@@ -29,8 +29,8 @@
 ;;-----------------------------------------------------------------------------
 
 ;; User
-(setq user-full-name    "Inge Jørgensen"
-      user-mail-address "inge@elektronaut.no")
+(setq-default user-full-name    "Inge Jørgensen"
+              user-mail-address "inge@elektronaut.no")
 
 
 ;;-----------------------------------------------------------------------------
@@ -57,13 +57,13 @@
 (scroll-bar-mode -1)
 
 ;; Input config
-(setq default-input-method "MacOSX"
-      mac-option-modifier nil
-      mac-right-option-modifier nil
-      mac-control-modifier 'control
-      mac-command-modifier 'meta
-      x-select-enable-clipboard t
-      mouse-wheel-scroll-amount '(0.01))
+(setq-default default-input-method "MacOSX"
+              mac-option-modifier nil
+              mac-right-option-modifier nil
+              mac-control-modifier 'control
+              mac-command-modifier 'meta
+              x-select-enable-clipboard t
+              mouse-wheel-scroll-amount '(0.01))
 
 ;; Disable bell when scrolling
 (defun inge-bell-function ()
@@ -73,14 +73,14 @@
                   keyboard-quit mwheel-scroll down up next-line previous-line
                   backward-char forward-char))
     (ding)))
-(setq ring-bell-function 'inge-bell-function)
+(setq-default ring-bell-function 'inge-bell-function)
 
 ;; Frame title
-(setq frame-title-format
-      '("" invocation-name " - "
-        (:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
+(setq-default frame-title-format
+              '("" invocation-name " - "
+                (:eval (if (buffer-file-name)
+                           (abbreviate-file-name (buffer-file-name))
+                         "%b"))))
 
 
 ;;-----------------------------------------------------------------------------
@@ -99,20 +99,20 @@
 ;;-----------------------------------------------------------------------------
 
 ;; Abbreviations
-(setq-default abbrev-mode t)
+(setq-default abbrev-mode t
+              save-abbrevs t)
 (read-abbrev-file "~/.emacs.d/abbrev_defs")
-(setq save-abbrevs t)
 
 ;; Calendar
-(setq calendar-week-start-day 1)
+(setq-default calendar-week-start-day 1)
 
 ;; Prelude
-(setq prelude-auto-save nil)
+(setq-default prelude-auto-save nil)
 
 ;; Org-mode
-(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg"
-      org-replace-disputed-keys t
-      org-src-fontify-natively t)
+(setq-default org-mobile-directory "~/Dropbox/Apps/MobileOrg"
+              org-replace-disputed-keys t
+              org-src-fontify-natively t)
 
 
 ;;-----------------------------------------------------------------------------
@@ -135,9 +135,9 @@
 (use-package beacon
   :init
   (beacon-mode +1)
-  (setq beacon-color "#3E4451"
-        beacon-blink-duration 0.2
-        beacon-blink-delay 0.05))
+  (setq-default beacon-color "#3E4451"
+                beacon-blink-duration 0.2
+                beacon-blink-delay 0.05))
 
 (use-package company
   :bind (("<C-tab>" . company-complete)))
@@ -171,18 +171,19 @@
   (setq-default enh-ruby-bounce-deep-indent t
                 enh-ruby-hanging-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.prawn$" . enh-ruby-mode))
   (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
   (add-hook 'enh-ruby-mode-hook 'robe-mode))
 
 (use-package flycheck
   :init
   (add-hook 'after-init-hook #'global-flycheck-mode)
-  (setq-default flycheck-temp-prefix ".flycheck")
+  (setq-default flycheck-temp-prefix ".flycheck"
+                flycheck-disabled-checkers (append flycheck-disabled-checkers
+                                                   '(javascript-jshint)))
   (eval-after-load "flycheck"
     '(progn
-       (flycheck-add-mode 'javascript-eslint 'web-mode)
-       (setq-default flycheck-disabled-checkers
-                     (append flycheck-disabled-checkers '(javascript-jshint))))))
+       (flycheck-add-mode 'javascript-eslint 'web-mode))))
 
 (use-package flyspell
   :init
@@ -195,21 +196,25 @@
   :init
   (add-to-list 'projectile-globally-ignored-directories "import/site"))
 
+(use-package helm-swoop
+  :bind (("M-i" . helm-swoop)
+         ("M-I" . helm-swoop-back-to-last-point)))
+
 (use-package magit
   :init
   (setq-default magit-use-overlays nil))
 
 (use-package mu4e
   :init
-  (setq mu4e-maildir          (expand-file-name "~/Mail/elektronaut")
-        mu4e-drafts-folder    "/Drafts"
-        mu4e-sent-folder      "/Sent Messages"
-        mu4e-trash-folder     "/Trash"
-        mu4e-get-mail-command "offlineimap"
-        ;;mu4e-sent-messages-behavior 'delete
-        mu4e-maildir-shortcuts '(("/"              . ?i)
-                                 ("/Sent Messages" . ?s)
-                                 ("/Trash"         . ?t))))
+  (setq-default mu4e-maildir          (expand-file-name "~/Mail/elektronaut")
+                mu4e-drafts-folder    "/Drafts"
+                mu4e-sent-folder      "/Sent Messages"
+                mu4e-trash-folder     "/Trash"
+                mu4e-get-mail-command "offlineimap"
+                ;;mu4e-sent-messages-behavior 'delete
+                mu4e-maildir-shortcuts '(("/"              . ?i)
+                                         ("/Sent Messages" . ?s)
+                                         ("/Trash"         . ?t))))
 
 (use-package js2-mode
   :init
@@ -239,15 +244,19 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.scss.erb" . scss-mode)))
 
+(use-package viking-mode
+  :init
+  (eval-after-load "viking-mode"
+    '(progn (viking-global-mode))))
+
 (use-package web-mode
   :init
   (setq-default web-mode-code-indent-offset 2
                 web-mode-css-indent-offset 2
                 web-mode-markup-indent-offset 2
                 web-mode-script-padding 2
-                web-mode-style-padding 2)
-  (setq web-mode-content-types-alist
-        '(("jsx" . "\\.es6\\'")))
+                web-mode-style-padding 2
+                web-mode-content-types-alist '(("jsx" . "\\.es6\\'")))
   (add-to-list 'auto-mode-alist '("\\.es6\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache$" . web-mode)))
@@ -268,8 +277,8 @@
 (global-set-key (kbd "C-M-,") 'comment-or-uncomment-region-or-line)
 (global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
 (global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
-(global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
 (global-set-key (kbd "C-x w") 'helm-spaces)
+(global-set-key (kbd "C-x C-+") 'auto-window-layout)
 
 
 (provide 'init)

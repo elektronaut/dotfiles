@@ -18,6 +18,7 @@
         sp-forward-slurp-sexp
         subword-left
         subword-right
+        undefined
         yaml-electric-dash-and-dot
         yas-expand
         ))
