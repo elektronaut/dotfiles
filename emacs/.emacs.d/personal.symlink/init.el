@@ -146,6 +146,10 @@
   :init
   (add-to-list 'company-backends 'company-emoji))
 
+(use-package company-web
+  :init
+  (add-to-list 'company-backends 'company-web))
+
 (use-package delight
   :config
   (delight '((yas-minor-mode nil yasnippet)
@@ -242,6 +246,9 @@
                 web-mode-markup-indent-offset 2
                 web-mode-script-padding 2
                 web-mode-style-padding 2)
+  (setq web-mode-content-types-alist
+        '(("jsx" . "\\.es6\\'")))
+  (add-to-list 'auto-mode-alist '("\\.es6\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache$" . web-mode)))
 

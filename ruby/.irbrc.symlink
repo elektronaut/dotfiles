@@ -11,7 +11,7 @@ begin
   Pry.start
   exit
 rescue LoadError
-  warn "=> Unable to load pry"
+  # warn "=> Unable to load pry"
 end
 
 IRB.conf[:SAVE_HISTORY] = 1000
