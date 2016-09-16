@@ -46,7 +46,8 @@
 ;; Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/atom-one-dark-theme")
-(load-theme 'atom-one-dark t)
+;; (load-theme 'atom-one-dark t)
+(load-theme 'doom-one t)
 (set-mouse-color "white")
 
 ;; Cursor
@@ -160,6 +161,7 @@
              (flyspell-mode nil flyspell)
              (smartparens-mode nil smartparens)
              (prelude-mode nil prelude-mode)
+             (projectile-mode nil projectile)
              (whitespace-mode nil whitespace))))
 
 (use-package dired
@@ -172,6 +174,7 @@
                 enh-ruby-hanging-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.prawn$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.axlsx$" . enh-ruby-mode))
   (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
   (add-hook 'enh-ruby-mode-hook 'robe-mode))
 
