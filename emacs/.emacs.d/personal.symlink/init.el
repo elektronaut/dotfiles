@@ -173,6 +173,7 @@
   (setq-default enh-ruby-bounce-deep-indent t
                 enh-ruby-hanging-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.rake$" . enh-ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.prawn$" . enh-ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.axlsx$" . enh-ruby-mode))
   (add-hook 'enh-ruby-mode-hook 'ruby-tools-mode)
