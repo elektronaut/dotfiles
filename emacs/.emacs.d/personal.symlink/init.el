@@ -44,8 +44,8 @@
 
 
 ;; Theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/atom-one-dark-theme")
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/atom-one-dark-theme")
 ;; (load-theme 'atom-one-dark t)
 (load-theme 'doom-one t)
 (set-mouse-color "white")
@@ -72,7 +72,7 @@
   (unless (memq this-command
                 '(isearch-abort abort-recursive-edit exit-minibuffer
                   keyboard-quit mwheel-scroll down up next-line previous-line
-                  backward-char forward-char))
+                  backward-char forward-char minibuffer-keyboard-quit))
     (ding)))
 (setq-default ring-bell-function 'inge-bell-function)
 
@@ -113,7 +113,16 @@
 ;; Org-mode
 (setq-default org-mobile-directory "~/Dropbox/Apps/MobileOrg"
               org-replace-disputed-keys t
-              org-src-fontify-natively t)
+              org-src-fontify-natively t
+              org-hide-leading-stars nil)
+
+;; Calendar
+(require 'calendar-norway)
+(setq-default calendar-holidays
+              (append
+               calendar-norway-raude-dagar
+               calendar-norway-andre-merkedagar
+               calendar-norway-dst))
 
 
 ;;-----------------------------------------------------------------------------
@@ -135,10 +144,11 @@
 
 (use-package beacon
   :init
-  (beacon-mode +1)
   (setq-default beacon-color "#3E4451"
                 beacon-blink-duration 0.2
-                beacon-blink-delay 0.05))
+                beacon-blink-delay 0.05)
+  :config
+  (beacon-mode +1))
 
 (use-package company
   :bind (("<C-tab>" . company-complete)))
@@ -204,6 +214,26 @@
   :bind (("M-i" . helm-swoop)
          ("M-I" . helm-swoop-back-to-last-point)))
 
+(use-package ivy
+  :bind (:map ivy-minibuffer-map
+         ("C-m" . ivy-alt-done)
+         :map ivy-mode-map
+         ("\C-s" . swiper)
+         ("M-x" . counsel-M-x)
+         ("C-x b" . ivy-switch-buffer)
+         ("C-x C-b" . ivy-switch-buffer)
+         ("C-x C-f" . counsel-find-file)
+         ("C-c f" . ivy-recentf)
+         ("M-y" . counsel-yank-pop)
+         ("C-c p s s" . counsel-projectile-ag))
+  :init
+  (setq ivy-use-virtual-buffers t)
+  (setq projectile-completion-system 'ivy)
+  (setq ivy-height 15)
+  (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
+  :config
+  (ivy-mode 1))
+
 (use-package magit
   :init
   (setq-default magit-use-overlays nil))
@@ -246,6 +276,7 @@
 
 (use-package scss-mode
   :init
+  (setq-default scss-compile-at-save nil)
   (add-to-list 'auto-mode-alist '("\\.scss.erb" . scss-mode)))
 
 (use-package viking-mode
@@ -283,7 +314,6 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
 (global-set-key (kbd "C-x w") 'helm-spaces)
 (global-set-key (kbd "C-x C-+") 'auto-window-layout)
-
 
 (provide 'init)
 ;;; init.el ends here

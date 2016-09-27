@@ -29,14 +29,13 @@
   :lighter " big"
   :after-hook
   (let ((adjust (if big-font-mode 20 -20)))
-    (set-face-attribute 'default nil
-                        :height (+ adjust
-                                   (face-attribute 'default :height)))
-    (set-face-attribute 'variable-pitch nil
-                        :height (+ adjust
-                                   (face-attribute 'variable-pitch :height)))))
+    (set-face-attribute
+     'default nil
+     :height (+ adjust (face-attribute 'default :height)))
+    (set-face-attribute
+     'variable-pitch nil
+     :height (+ adjust (face-attribute 'variable-pitch :height)))))
 
-;; Toggle comment on region or line
 (defun comment-or-uncomment-region-or-line ()
   "Comments or uncomments the region or the current line if there's no active region."
   (interactive)
@@ -46,7 +45,6 @@
       (setq beg (line-beginning-position) end (line-end-position)))
     (comment-or-uncomment-region beg end)))
 
-;; Kill buffers
 (defun kill-all-buffers ()
   "Kill all buffers."
   (interactive)
@@ -105,6 +103,11 @@
     (save-restriction
       (narrow-to-region start end)
       (while (re-search-forward "[, ]" nil t) (replace-match "" nil t)))))
+
+(defun counsel-projectile-ag ()
+  "Search in projectile root"
+  (interactive)
+  (counsel-ag (thing-at-point 'symbol) (projectile-project-root)))
 
 (provide 'functions)
 ;;; functions.el ends here

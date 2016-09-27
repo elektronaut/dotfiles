@@ -10,6 +10,8 @@
         fill-paragraph
         kill-region
         markdown-exdent-or-delete
+        org-beginning-of-line
+        org-self-insert-command
         prelude-kill-whole-line
         prelude-move-beginning-of-line
         ruby-tools-interpolate
