@@ -7,4 +7,5 @@ set tabstop=2 sw=2 sts=2
 set nowrap
 
 "Colors
+syntax on
 color Tomorrow-Night

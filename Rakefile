@@ -148,31 +148,6 @@ namespace :oh_my_zsh do
   end
 end
 
-namespace :janus do
-  desc "Install Janus"
-  task :install do
-    unless File.exist?(home_dir.join(".vim"))
-      debug_output "Installing Janus"
-      `curl -Lo- https://bit.ly/janus-bootstrap | bash`
-    end
-  end
-
-  desc "Update Janus"
-  task :update do
-    if File.exist?(home_dir.join(".vim"))
-      `cd "#{home_dir.join(".vim")}" && rake`
-    else
-      puts "Janus not found, run rake janus:install."
-    end
-  end
-
-  desc "Delete Janus"
-  task :destroy do
-    return unless File.exist?(home_dir.join(".vim"))
-    FileUtils.rm_rf(home_dir.join(".vim"))
-  end
-end
-
 namespace :update do
   desc "Updates packages"
   task :packages do
@@ -184,7 +159,6 @@ namespace :update do
   desc "Updates everything"
   task :all => [
     "oh_my_zsh:update",
-    "janus:update",
     "update"
   ] do
   end
@@ -195,7 +169,6 @@ task :default => [:update]
 desc "Updates everything"
 task :update => [
   "oh_my_zsh:install",
-  # "janus:install",
   "update:packages"
 ] do
   puts "dotfiles updated"
@@ -205,7 +178,5 @@ desc "Install"
 task :install => [
   "oh_my_zsh:destroy",
   "oh_my_zsh:install",
-  # "janus:destroy",
-  # "janus:install",
   "update"
 ]

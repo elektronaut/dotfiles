@@ -23,7 +23,7 @@ Updating is quite simple:
 update_dotfiles
 ```
 
-To update absolutely everything, including Oh My ZSH and Janus, run:
+To update absolutely everything including Oh My ZSH, run:
 
 ```sh
 update_dotfiles all
