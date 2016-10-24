@@ -33,7 +33,7 @@ class TemplateRenderer
   end
 
   def rbenv?
-    ENV["RBENV"] || `which rbenv` =~ /bin\/rbenv/
+    ENV["RBENV"] || `which rbenv` =~ /(bin|libexec)\/rbenv/
   end
 
   def pow?
