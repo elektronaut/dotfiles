@@ -33,12 +33,12 @@ export HISTSIZE=512000
 export SAVEHIST=512000
 
 <% if osx? %>
-export GIT_EDITOR=$EDITOR
-export SSL_CERT_FILE=/usr/local/etc/openssl/certs/cert.pem
-ssh-add -A 2>/dev/null
+  export GIT_EDITOR=$EDITOR
+  export SSL_CERT_FILE=/usr/local/etc/openssl/certs/cert.pem
+  ssh-add -A 2>/dev/null
 <% else %>
-export EDITOR='vim'
-export GIT_EDITOR='vim'
+  export EDITOR='vim'
+  export GIT_EDITOR='vim'
 <% end %>
 
 export LC_CTYPE="en_US.UTF-8"

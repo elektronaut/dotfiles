@@ -20,4 +20,11 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%} ✘"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[magenta]%} ✘"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[green]%} ✔"
+
+if [[ -n $SSH_CONNECTION ]]; then
+  ZSH_THEME_TERM_TAB_TITLE_IDLE="%m - %15<..<%~%<<"
+else
+  ZSH_THEME_TERM_TAB_TITLE_IDLE="%15<..<%~%<<"
+fi
+
 export LSCOLORS="exfxgxdxcxegedabagacad"
