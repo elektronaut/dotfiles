@@ -5,23 +5,29 @@ require "pg"
 require "pp"
 
 source_db, target_db = ARGV
+target_db ||= source_db
 
-unless source_db && target_db
-  puts "Usage: #{$0} source_db target_db"
+unless source_db
+  puts "Usage: #{$0} source_db [target_db]"
   exit
 end
 
-source_username = ENV["MYSQL_USER"] || "root"
-source_password = ENV["MYSQL_PASSWORD"] || nil
-
 source = Mysql2::Client.new(
   host: "localhost",
-  username: source_username,
-  password: source_password,
+  username: ENV["MYSQL_USER"] || "root",
+  password: ENV["MYSQL_PASSWORD"] || nil,
   database: source_db
 )
 
 target = PG.connect(dbname: target_db)
+
+def coerce_value(type, value)
+  if type == "boolean"
+    value == 1
+  else
+    value
+  end
+end
 
 tables = target.exec("SELECT table_name
                       FROM information_schema.tables
@@ -40,31 +46,23 @@ tables = target.exec("SELECT table_name
   end
 end
 
-def coerce_value(type, value)
-  if type == "boolean"
-    value == 1 ? true : false
-  else
-    value
-  end
-end
-
 tables.each do |table, columns|
   row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
                     .to_a.first["row_count"]
   puts "Converting table '#{table}' (#{row_count} rows)..."
   target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY")
 
-  query = "INSERT INTO \"#{table}\" (" +
-          columns.keys.map { |k| "\"#{k}\"" }.join(", ") +
-          ") VALUES (" +
-          (1..columns.length).map { |n| "$#{n}" }.join(", ") +
-          ")"
+  column_names = columns.keys.map { |k| "\"#{k}\"" }.join(", ")
+  placeholders = (1..columns.length).map { |n| "$#{n}" }.join(", ")
 
   source.query("SELECT * FROM `#{table}`").each do |row|
     values = columns.map do |name, opts|
       coerce_value(opts[:data_type], row[name])
     end
 
-    target.exec_params(query, values)
+    target.exec_params(
+      "INSERT INTO \"#{table}\" (#{column_names}) VALUES (#{placeholders})",
+      values
+    )
   end
 end
