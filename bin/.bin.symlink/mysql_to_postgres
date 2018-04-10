@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+require "mysql2"
+require "pg"
+require "pp"
+
+source_db, target_db = ARGV
+
+unless source_db && target_db
+  puts "Usage: #{$0} source_db target_db"
+  exit
+end
+
+source_username = ENV["MYSQL_USER"] || "root"
+source_password = ENV["MYSQL_PASSWORD"] || nil
+
+source = Mysql2::Client.new(
+  host: "localhost",
+  username: source_username,
+  password: source_password,
+  database: source_db
+)
+
+target = PG.connect(dbname: target_db)
+
+tables = target.exec("SELECT table_name
+                      FROM information_schema.tables
+                      WHERE table_schema = 'public'")
+               .each_with_object({}) do |row, hash|
+  table_name = row.values_at("table_name").first
+
+  hash[table_name] = target.exec_params(
+    "SELECT column_name, data_type FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = $1",
+    [table_name]
+  ).each_with_object({}) do |col_row, col_hash|
+    col_hash[col_row.values_at("column_name").first] = {
+      data_type: col_row.values_at("data_type").first
+    }
+  end
+end
+
+def coerce_value(type, value)
+  if type == "boolean"
+    value == 1 ? true : false
+  else
+    value
+  end
+end
+
+tables.each do |table, columns|
+  row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
+                    .to_a.first["row_count"]
+  puts "Converting table '#{table}' (#{row_count} rows)..."
+  target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY")
+
+  query = "INSERT INTO \"#{table}\" (" +
+          columns.keys.map { |k| "\"#{k}\"" }.join(", ") +
+          ") VALUES (" +
+          (1..columns.length).map { |n| "$#{n}" }.join(", ") +
+          ")"
+
+  source.query("SELECT * FROM `#{table}`").each do |row|
+    values = columns.map do |name, opts|
+      coerce_value(opts[:data_type], row[name])
+    end
+
+    target.exec_params(query, values)
+  end
+end
