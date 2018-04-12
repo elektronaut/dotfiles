@@ -16,7 +16,9 @@ source = Mysql2::Client.new(
   host: "localhost",
   username: ENV["MYSQL_USER"] || "root",
   password: ENV["MYSQL_PASSWORD"] || nil,
-  database: source_db
+  database: source_db,
+  encoding: "utf8mb4",
+  collation: "utf8mb4_unicode_ci"
 )
 
 target = PG.connect(dbname: target_db)
