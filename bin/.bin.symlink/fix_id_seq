@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require "pg"
+require "pp"
+
+target_db = ARGV.first
+
+unless target_db
+  puts "Usage: #{$0} target_db"
+  exit
+end
+
+target = PG.connect(dbname: target_db)
+
+tables = target.exec("SELECT table_name
+                      FROM information_schema.tables
+                      WHERE table_schema = 'public'")
+               .each_with_object({}) do |row, hash|
+  table_name = row.values_at("table_name").first
+
+  hash[table_name] = target.exec_params(
+    "SELECT column_name, data_type FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = $1",
+    [table_name]
+  ).each_with_object({}) do |col_row, col_hash|
+    col_hash[col_row.values_at("column_name").first] = {
+      data_type: col_row.values_at("data_type").first
+    }
+  end
+end
+
+tables.each do |table, columns|
+  if columns.keys.include?("id")
+    puts "Updating table '#{table}'..."
+    max_id = target.exec("SELECT MAX(id) AS id FROM \"#{table}\"").first.values_at("id").first
+    next unless max_id
+    target.exec("ALTER SEQUENCE \"#{table}_id_seq\" RESTART WITH " + (max_id.to_i + 1).to_s)
+  else
+    puts "Skipping table '#{table}', no id column..."
+  end
+end
