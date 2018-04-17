@@ -49,6 +49,11 @@ tables = target.exec("SELECT table_name
 end
 
 tables.each do |table, columns|
+  unless source.query("SHOW TABLES LIKE \"#{table}\"").to_a.any?
+    puts "Warning: Source table '#{table}' does not exist, skipping..."
+    next
+  end
+
   row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
                     .to_a.first["row_count"]
   puts "Converting table '#{table}' (#{row_count} rows)..."
