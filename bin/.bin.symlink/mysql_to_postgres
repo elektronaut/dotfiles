@@ -51,6 +51,7 @@ end
 tables.each do |table, columns|
   if table == "schema_migrations"
     puts "Skipping table '#{table}'..."
+    next
   end
 
   unless source.query("SHOW TABLES LIKE \"#{table}\"").to_a.any?
