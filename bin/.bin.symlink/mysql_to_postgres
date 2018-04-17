@@ -57,6 +57,7 @@ tables.each do |table, columns|
   column_names = columns.keys.map { |k| "\"#{k}\"" }.join(", ")
   placeholders = (1..columns.length).map { |n| "$#{n}" }.join(", ")
 
+  # Copy rows
   source.query("SELECT * FROM `#{table}`").each do |row|
     values = columns.map do |name, opts|
       coerce_value(opts[:data_type], row[name])
@@ -67,4 +68,14 @@ tables.each do |table, columns|
       values
     )
   end
+
+  # Update id_seq
+  next unless columns.keys.include?("id")
+  max_id = target.exec("SELECT MAX(id) AS id FROM \"#{table}\"")
+                 .first.values_at("id").first
+  next unless max_id
+  target.exec(
+    "ALTER SEQUENCE \"#{table}_id_seq\" RESTART WITH " +
+    (max_id.to_i + 1).to_s
+  )
 end
