@@ -118,6 +118,10 @@ class Project
     end
   end
 
+  def sentry?
+    file_exist?("config/initializers/sentry.rb")
+  end
+
   private
 
   def gems
@@ -161,7 +165,7 @@ class AppStatus
 
   def formatted_ruby_version(p)
     v = p.ruby_version
-    if v =~ /^2\.2\./
+    if v =~ /^2\.4\./
       v.green
     elsif v =~ /^2\./
       v.yellow
@@ -199,7 +203,8 @@ class AppStatus
         formatted_rails_version(p),
         formatted_capistrano_version(p),
         p.gem_version('pages_core'),
-        p.production_host.to_s.white.gsub('.cloud.manualdesign.no'){ |s| s.reset }
+        p.production_host.to_s.white.gsub('.cloud.manualdesign.no'){ |s| s.reset },
+        (p.sentry? ? "Yes" : "No".red)
       ]
     end
   end
@@ -207,7 +212,8 @@ class AppStatus
   def table
     table = Terminal::Table.new(
       headings: [
-        'Project', 'Ruby', 'Rails', 'Capistrano', 'Pages', 'Production host'
+        "Project", "Ruby", "Rails", "Capistrano", "Pages",
+        "Production host", "Sentry"
       ],
       rows: table_rows
     )
