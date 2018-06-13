@@ -88,6 +88,12 @@ class Project
     @path = path
   end
 
+  def database_adapter
+    return nil unless file_exist?("config/database.yml")
+    config = YAML.load(read_file("config/database.yml"))
+    config["production"]["adapter"]
+  end
+
   def name
     @path.basename
   end
@@ -195,6 +201,11 @@ class AppStatus
     end
   end
 
+  def formatted_database_adapter(str)
+    return str.green if str == "postgresql"
+    str&.yellow
+  end
+
   def table_rows
     projects.map do |p|
       [
@@ -203,8 +214,9 @@ class AppStatus
         formatted_rails_version(p),
         formatted_capistrano_version(p),
         p.gem_version('pages_core'),
-        p.production_host.to_s.white.gsub('.cloud.manualdesign.no'){ |s| s.reset },
-        (p.sentry? ? "Yes" : "No".red)
+        formatted_database_adapter(p.database_adapter),
+        (p.sentry? ? "Yes" : "No".red),
+        p.production_host.to_s.white.gsub('.cloud.anyone.no'){ |s| s.reset }
       ]
     end
   end
@@ -213,7 +225,7 @@ class AppStatus
     table = Terminal::Table.new(
       headings: [
         "Project", "Ruby", "Rails", "Capistrano", "Pages",
-        "Production host", "Sentry"
+        "Database", "Sentry", "Production host"
       ],
       rows: table_rows
     )
