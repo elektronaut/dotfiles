@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "circleci"
+  gem "git"
+end
+
+unless ENV["CIRCLECI_TOKEN"]
+  puts "Error: The CIRCLECI_TOKEN environment variable hasn't been set."
+  exit
+end
+
+slack_webhook_url = ENV["SLACK_WEBHOOK_URL"]
+
+CircleCi.configure do |config|
+  config.token = ENV["CIRCLECI_TOKEN"]
+end
+
+paths = ARGV.map { |p| File.expand_path(p) }
+
+unless paths.any?
+  puts "USAGE: #{$0} <path>"
+  exit
+end
+
+paths.each do |path|
+  git = Git.open(path)
+  github_project = git.remote("origin").url.gsub(/\.git$/, "").split(":").last
+  owner, repo = github_project.split("/")
+
+  puts "* #{github_project}"
+
+  project = CircleCi::Project.new(owner, repo, "github")
+
+  print "  - Detecting config file..."
+  if File.exist?(File.join(path, ".circleci", "config.yml"))
+    puts "OK"
+  else
+    puts "MISSING"
+    next
+  end
+
+  print "  - Following project..."
+  project.follow
+  puts "OK"
+
+  print "  - Setting RAILS_MASTER_KEY..."
+  master_key_file = File.join(path, "config", "master.key")
+  if File.exist?(master_key_file)
+    master_key = File.read(master_key_file)
+    project.add_envvar(name: "RAILS_MASTER_KEY", value: master_key)
+    puts "OK"
+  else
+    puts "NOT FOUND"
+  end
+
+  print "  - Detecting webhook..."
+  webhook_url = project.settings.body["slack_webhook_url"]
+  if webhook_url && !webhook_url.empty?
+    puts "OK"
+  elsif !slack_webhook_url || slack_webhook_url.empty?
+    puts "NOT SET"
+    puts "\nThe SLACK_WEBHOOK_URL environment variable hasn't been set"
+  else
+    puts "NOT FOUND"
+    puts "\nSlack webhook is missing, please add it here:\nhttps://circleci.com/gh/#{github_project}/edit#hooks"
+    puts "\nThe webhook URL is: #{slack_webhook_url}"
+  end
+
+  print "  - Detecting user keys..."
+  user_keys = project.list_checkout_keys.body.select { |k| k["type"] == "github-user-key" }
+  if user_keys.any?
+    puts "OK"
+  else
+    project.new_checkout_key("github-user-key")
+    puts "CREATED"
+  end
+end
