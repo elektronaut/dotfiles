@@ -39,5 +39,5 @@ if adapter =~ /^mysql/
 
   `ssh #{remote_host} "mysqldump --add-drop-table --single-transaction --allow-keywords --add-drop-table --single-transaction --allow-keywords -u #{mysql_remote_user} -p#{mysql_remote_password} -h 127.0.0.1 --max_allowed_packet=100M #{remote_database}" | mysql -u root #{local_database}`
 elsif adapter =~ /^postgres/
-  `ssh #{remote_host} "pg_dump -c #{remote_database}" | psql #{local_database}`
+  `ssh #{remote_host} "pg_dump -c --no-owner #{remote_database}" | psql #{local_database}`
 end

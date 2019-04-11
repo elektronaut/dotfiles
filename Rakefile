@@ -168,7 +168,7 @@ task :default => [:update]
 
 desc "Updates everything"
 task :update => [
-  "oh_my_zsh:install",
+  "oh_my_zsh:update",
   "update:packages"
 ] do
   puts "dotfiles updated"

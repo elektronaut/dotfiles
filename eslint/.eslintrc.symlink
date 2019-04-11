@@ -1,6 +1,6 @@
 {
   "parser": "babel-eslint",
-  "plugins": [ "react" ],
+  "plugins": [ "react", "react-hooks" ],
   "env": {
     "browser": true,
     "es6": true,
@@ -21,6 +21,7 @@
   },
   "rules": {
     "consistent-return": [0],
+    "complexity": [2, 6],
     "key-spacing": [0],
     "quotes": [0],
     "new-cap": [0],
@@ -30,6 +31,7 @@
     "no-use-before-define": [2, "nofunc"],
     "react/jsx-no-undef": 1,
     "react/jsx-uses-react": 1,
-    "react/jsx-uses-vars": 1
+    "react/jsx-uses-vars": 1,
+    "react-hooks/rules-of-hooks": "error"
   }
 }

@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+
+require "ostruct"
+
+required_tools = %w[identify convert pngquant]
+max_size = 4096
+
+required_tools.each do |tool|
+  unless File.exist?(File.join("/usr/local/bin", tool))
+    puts "Missing tool: \"#{tool}\". Please install with Homebrew."
+    exit
+  end
+end
+
+class Integer
+  def to_filesize
+    {
+      'B'  => 1024,
+      'KB' => 1024 * 1024,
+      'MB' => 1024 * 1024 * 1024,
+      'GB' => 1024 * 1024 * 1024 * 1024,
+      'TB' => 1024 * 1024 * 1024 * 1024 * 1024
+    }.each_pair { |e, s| return "#{(self.to_f / (s / 1024)).round(2)}#{e}" if self < s }
+  end
+end
+
+def identify(path)
+  output = `/usr/local/bin/identify -format \"%m %w %h\" \"#{path}\"`
+  return nil if output.empty?
+
+  format_str, width, height = output.split(" ")
+  OpenStruct.new(path: path, format: format(format_str),
+                 width: width, height: height)
+end
+
+def format(str)
+  case str
+  when "GIF"
+    "gif"
+  when "PNG"
+    "png"
+  else
+    "jpg"
+  end
+end
+
+def target_filename(image)
+  i = 0
+  dir = File.dirname(image.path)
+  base = File.basename(image.path, ".*")
+  filename = "#{dir}/#{base}-web.#{image.format}"
+  while File.exist?(filename)
+    i += 1
+    filename = "#{dir}/#{base}-web (#{i}).#{image.format}"
+  end
+  filename
+end
+
+images = ARGV.map { |i| identify(i) }.compact
+original_size = 0
+new_size = 0
+
+images.each do |image|
+  target = target_filename(image)
+  opts = "-resize \"#{max_size}x#{max_size}>\" -auto-orient -colorspace sRGB -strip"
+  if image.format == "jpg"
+    opts += " -quality 85 -sampling-factor \"4:2:0\" -interlace JPEG"
+  end
+  `/usr/local/bin/convert "#{image.path}" #{opts} "#{target}"`
+
+  if image.format == "png"
+    `/usr/local/bin/pngquant --skip-if-larger --force --ext .png --speed 1 "#{target}"`
+  end
+
+  original_size += File.size(image.path)
+  new_size += File.size(target)
+end
+
+savings = original_size - new_size
+percentage = "%.2f" % ((savings.to_f / original_size) * 100)
+
+puts("#{images.length} images reduced by #{savings.to_filesize} " \
+     "(#{percentage}%)")

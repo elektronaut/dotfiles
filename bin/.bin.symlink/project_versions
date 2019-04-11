@@ -63,6 +63,10 @@ class RailsVersion
   end
 
   def latest?
+    self.class.latest_versions.first == @version
+  end
+
+  def latest_minor?
     self.class.latest_versions.include?(@version)
   end
 
@@ -104,8 +108,16 @@ class Project
     end
   end
 
+  def rails_app?
+    gem?('rails')
+  end
+
   def ruby_version
     @ruby_version ||= read_file('.ruby-version')
+  end
+
+  def ruby_app?
+    ruby_version ? true : false
   end
 
   def gem?(gem)
@@ -124,8 +136,21 @@ class Project
     end
   end
 
+  def ci?
+    file_exist?(".circleci/config.yml")
+  end
+
+  def credentials?
+    file_exist?("config/credentials.yml.enc")
+  end
+
   def sentry?
     file_exist?("config/initializers/sentry.rb")
+  end
+
+  def sphinx?
+    return false unless file_exist?("Gemfile.lock")
+    read_file("Gemfile.lock").match?(/sphinx/)
   end
 
   private
@@ -163,7 +188,7 @@ class AppStatus
   end
 
   def projects
-    @projects ||= @root.entries.select do |p|
+    @projects ||= @root.entries.sort.select do |p|
       File.directory?(p) &&
         p.basename.to_s =~ /^[^\.]/
     end.map { |path| Project.new(path) }
@@ -171,7 +196,7 @@ class AppStatus
 
   def formatted_ruby_version(p)
     v = p.ruby_version
-    if v =~ /^2\.4\./
+    if v =~ /^2\.6\./
       v.green
     elsif v =~ /^2\./
       v.yellow
@@ -182,8 +207,10 @@ class AppStatus
 
   def formatted_rails_version(p)
     if v = p.rails_version
-      if v.latest? && v.supported?
+      if v.latest?
         v.to_s.green
+      elsif v.latest_minor? && v.supported?
+        v.to_s.cyan
       elsif v.supported?
         v.to_s.yellow
       else
@@ -206,6 +233,16 @@ class AppStatus
     str&.yellow
   end
 
+  def credentials_status(p)
+    return "Yes" if p.credentials?
+    return "No".red if p.rails_app?
+  end
+
+  def sentry_status(p)
+    return "Yes" if p.sentry?
+    return "No".red if p.ruby_app?
+  end
+
   def table_rows
     projects.map do |p|
       [
@@ -215,7 +252,10 @@ class AppStatus
         formatted_capistrano_version(p),
         p.gem_version('pages_core'),
         formatted_database_adapter(p.database_adapter),
-        (p.sentry? ? "Yes" : "No".red),
+        (p.sphinx? ? "Yes".red : "No".green),
+        sentry_status(p),
+        credentials_status(p),
+        (p.ci? ? "Yes".green : "No".yellow),
         p.production_host.to_s.white.gsub('.cloud.anyone.no'){ |s| s.reset }
       ]
     end
@@ -224,8 +264,8 @@ class AppStatus
   def table
     table = Terminal::Table.new(
       headings: [
-        "Project", "Ruby", "Rails", "Capistrano", "Pages",
-        "Database", "Sentry", "Production host"
+        "Project", "Ruby", "Rails", "Capistrano", "Pages", "Database", "Sphinx",
+        "Sentry", "Credentials", "CI", "Production host"
       ],
       rows: table_rows
     )
@@ -233,4 +273,6 @@ class AppStatus
   end
 end
 
-puts AppStatus.new(".").table
+status = AppStatus.new(".")
+puts status.table
+puts "  Total: #{status.projects.length} projects"
