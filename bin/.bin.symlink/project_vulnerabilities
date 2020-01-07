@@ -1,0 +1,155 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'pathname'
+require 'terminal-table'
+require 'term/ansicolor'
+require 'open-uri'
+require 'json'
+require 'yaml'
+
+require "bundler/audit"
+require "bundler/audit/scanner"
+
+
+class String
+  include Term::ANSIColor
+end
+
+class Project
+  def initialize(path)
+    @path = path.realpath
+  end
+
+  def name
+    @path.basename
+  end
+
+  def rails_app?
+    gem?("rails")
+  end
+
+  def ruby_app?
+    ruby_version ? true : false
+  end
+
+  def gem?(gem)
+    gems.key?(gem)
+  end
+
+  def gem_version(gem)
+    gems[gem] if gem?(gem)
+  end
+
+  def production_host
+    if file_exist?('config/deploy/production.rb')
+      read_file('config/deploy/production.rb').match(/^server ['"]([\w\d\-\.]+)['"]/)[1]
+    elsif file_exist?('config/deploy.rb')
+      read_file('config/deploy.rb').match(/^set :remote_host, ['"]([\w\d\-\.]+)['"]/)[1]
+    end
+  end
+
+  def vulnerabilities
+    visit do
+      @vulnerabilities ||= Bundler::Audit::Scanner.new(@path).scan.to_a
+    end
+      # begin
+      #   visit do
+      #     scanner = Bundler::Audit::Scanner.new(@path.realpath, "Gemfile.lock")
+      #     scanner.scan do |result|
+      #       raise result.inspect
+      #       puts result.inspect
+      #     end
+      #   end
+      # end
+  end
+
+  private
+
+  def gems
+    @gems ||= begin
+      if gem_file = read_file("Gemfile.lock")
+        lines = gem_file.split("\n").select { |l| l =~ /^    \w/ }
+        lines.inject(Hash.new) do |versions, line|
+          name = line.match(/([\w\d\-_]+)/)[1]
+          version = line.match(/\(([\w\d\.]+( [\w\d]+)?)\)/)[1]
+          versions[name] = version
+          versions
+        end
+      else
+        {}
+      end
+    end
+  end
+
+  def file_exist?(file_path)
+    File.exist?(@path.join(file_path))
+  end
+
+  def read_file(file_path)
+    if file_exist?(file_path)
+      File.read(@path.join(file_path)).chomp
+    end
+  end
+
+  def visit(&block)
+    current_dir = Dir.pwd
+    Dir.chdir(@path)
+    result = yield
+    Dir.chdir(current_dir)
+    result
+  end
+end
+
+class AppStatus
+  def initialize(root)
+    @root = Pathname.new(root).expand_path
+  end
+
+  def projects
+    @projects ||= @root.entries.sort.select do |p|
+      File.directory?(p) &&
+        p.basename.to_s =~ /^[^\.]/ &&
+        File.exist?(p.join("Gemfile.lock"))
+    end.map { |path| Project.new(path) }
+  end
+
+  def table_rows
+    #raise p.vulnerabilities.first.inspect
+    projects.map do |p|
+      [
+        p.name,
+        p.gem_version("rails"),
+        formatted_status(p),
+        p.vulnerabilities.map { |v| v.gem.name }.sort.uniq.join(", "),
+        p.production_host.to_s.white.gsub('.cloud.anyone.no'){ |s| s.reset }
+      ]
+    end
+  end
+
+  def table
+    table = Terminal::Table.new(
+      headings: [
+        "Project", "Rails", "Status", "Vulnerable gems", "Production host"
+      ],
+      rows: table_rows
+    )
+    table
+  end
+
+  def formatted_status(p)
+    if p.vulnerabilities.any?
+      "Warning".red
+    else
+      "OK".green
+    end
+  end
+end
+
+print "Updating ruby-advisory-db..."
+`bundle-audit update 2>&1`
+puts "OK"
+
+status = AppStatus.new(".")
+puts status.table
+puts "  Total: #{status.projects.length} projects"
