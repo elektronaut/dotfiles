@@ -38,7 +38,13 @@ class RailsVersion
     def tree_to_list(tree)
       tree.flat_map do |major, minors|
         minors.map do |minor, patches|
-          "#{major}.#{minor}.#{patches.keys.max}"
+          patch = patches.keys.max
+
+          extension = patches[patch].select { |e| e =~ /^[\d]+$/ }
+                                    .map { |e| ".#{e}" }
+                                    .first
+
+          "#{major}.#{minor}.#{patches.keys.max}#{extension}"
         end
       end
     end
@@ -46,12 +52,10 @@ class RailsVersion
     def version_tree
       all_versions.inject(Hash.new) do |versions, version|
         major, minor, patch, pre = version.split(".")
-        unless pre
-          versions[major.to_i] ||= {}
-          versions[major.to_i][minor.to_i] ||= {}
-          versions[major.to_i][minor.to_i][patch.to_i] ||= []
-          #versions[major.to_i][minor.to_i][patch.to_i] << pre if pre
-        end
+        versions[major.to_i] ||= {}
+        versions[major.to_i][minor.to_i] ||= {}
+        versions[major.to_i][minor.to_i][patch.to_i] ||= []
+        versions[major.to_i][minor.to_i][patch.to_i] << pre
         versions
       end
     end
