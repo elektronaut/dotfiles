@@ -3,6 +3,7 @@
 require "mysql2"
 require "pg"
 require "pp"
+require "yaml"
 
 source_db, target_db = ARGV
 target_db ||= source_db

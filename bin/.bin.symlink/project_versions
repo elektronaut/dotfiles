@@ -152,11 +152,6 @@ class Project
     file_exist?("config/initializers/sentry.rb")
   end
 
-  def sphinx?
-    return false unless file_exist?("Gemfile.lock")
-    read_file("Gemfile.lock").match?(/sphinx/)
-  end
-
   private
 
   def gems
@@ -200,7 +195,7 @@ class AppStatus
 
   def formatted_ruby_version(p)
     v = p.ruby_version
-    if v =~ /^2\.6\./
+    if v =~ /^2\.7\./
       v.green
     elsif v =~ /^2\./
       v.yellow
@@ -256,7 +251,6 @@ class AppStatus
         formatted_capistrano_version(p),
         p.gem_version('pages_core'),
         formatted_database_adapter(p.database_adapter),
-        (p.sphinx? ? "Yes".red : "No".green),
         sentry_status(p),
         credentials_status(p),
         (p.ci? ? "Yes".green : "No".yellow),
@@ -268,7 +262,7 @@ class AppStatus
   def table
     table = Terminal::Table.new(
       headings: [
-        "Project", "Ruby", "Rails", "Capistrano", "Pages", "Database", "Sphinx",
+        "Project", "Ruby", "Rails", "Capistrano", "Pages", "Database",
         "Sentry", "Credentials", "CI", "Production host"
       ],
       rows: table_rows

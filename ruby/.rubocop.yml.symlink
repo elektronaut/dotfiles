@@ -1,5 +1,29 @@
+require: rubocop-rspec
+
+AllCops:
+  Exclude:
+    - "db/schema.rb"
+
+Metrics/AbcSize:
+  Exclude:
+    - "db/migrate/*"
+
+Metrics/ClassLength:
+  Exclude:
+    - "db/migrate/*"
+
+Metrics/MethodLength:
+  Exclude:
+    - "db/migrate/*"
+
 StringLiterals:
   EnforcedStyle: double_quotes
 
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
+
+Rails:
+  Enabled: true
+
+Documentation:
+  Enabled: false

@@ -67,7 +67,9 @@ paths.each do |path|
   else
     puts "NOT FOUND"
     puts "\nSlack webhook is missing, please add it here:\nhttps://circleci.com/gh/#{github_project}/edit#hooks"
-    puts "\nThe webhook URL is: #{slack_webhook_url}"
+    puts "\nThe webhook URL is: #{slack_webhook_url} (copied to clipboard)"
+    `echo "#{slack_webhook_url}" | pbcopy`
+    `open https://circleci.com/gh/#{github_project}/edit#hooks`
   end
 
   print "  - Detecting user keys..."
