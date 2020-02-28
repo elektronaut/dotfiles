@@ -1,16 +1,21 @@
 #! /usr/bin/env ruby
 
-require 'rubygems'
-require 'pathname'
-require 'terminal-table'
-require 'term/ansicolor'
-require 'open-uri'
-require 'json'
-require 'yaml'
+require "rubygems"
+require "pathname"
+require "open-uri"
+require "json"
+require "yaml"
 
-require "bundler/audit"
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems-org"
+  gem "terminal-table"
+  gem "term-ansicolor"
+  gem "bundler-audit"
+end
+
 require "bundler/audit/scanner"
-
 
 class String
   include Term::ANSIColor
