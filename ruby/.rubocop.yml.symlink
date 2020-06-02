@@ -16,8 +16,11 @@ Metrics/MethodLength:
   Exclude:
     - "db/migrate/*"
 
-StringLiterals:
+Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 80
 
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
@@ -25,5 +28,5 @@ Layout/MultilineOperationIndentation:
 Rails:
   Enabled: true
 
-Documentation:
+Style/Documentation:
   Enabled: false
