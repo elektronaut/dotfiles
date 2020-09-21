@@ -20,8 +20,8 @@ export DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git golang heroku ruby rails rake gem node bundler capistrano vagrant postgres zsh-autosuggestions)
-<% if osx? %>plugins+=(emacs osx brew sublime)<% end %>
+plugins=(git golang heroku ruby rails rake gem node bundler capistrano vagrant postgres)
+<% if osx? %>plugins+=(emacs osx brew sublime zsh-autosuggestions)<% end %>
 <% if pow? %>plugins+=(pow powder)<% end %>
 <% if rbenv? %>plugins+=(rbenv)<% end %>
 
