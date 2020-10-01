@@ -1,7 +1,14 @@
 #!/usr/bin/env ruby
 
-require "mysql2"
-require "pg"
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "mysql2"
+  gem "pg"
+  gem "progress_bar"
+end
+
 require "pp"
 require "yaml"
 
@@ -63,13 +70,14 @@ tables.each do |table, columns|
   row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
                     .to_a.first["row_count"]
   puts "Converting table '#{table}' (#{row_count} rows)..."
+  bar = ProgressBar.new(row_count)
   target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY")
 
   column_names = columns.keys.map { |k| "\"#{k}\"" }.join(", ")
   placeholders = (1..columns.length).map { |n| "$#{n}" }.join(", ")
 
   # Copy rows
-  source.query("SELECT * FROM `#{table}`").each do |row|
+  source.query("SELECT * FROM `#{table}`", stream: true, cache_rows: false).each do |row|
     values = columns.map do |name, opts|
       coerce_value(opts[:data_type], row[name])
     end
@@ -78,6 +86,7 @@ tables.each do |table, columns|
       "INSERT INTO \"#{table}\" (#{column_names}) VALUES (#{placeholders})",
       values
     )
+    bar.increment! if row_count > 1000
   end
 
   # Update id_seq
