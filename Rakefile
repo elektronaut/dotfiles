@@ -123,7 +123,7 @@ namespace :oh_my_zsh do
   task :install do
     unless File.exist?(home_dir.join(".oh-my-zsh"))
       debug_output "Installing oh-my-zsh"
-      `wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh`
+      `wget --no-check-certificate https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O - | sh`
     end
   end
 
