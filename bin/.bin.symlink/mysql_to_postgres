@@ -20,6 +20,47 @@ unless source_db
   exit
 end
 
+class BulkInserter
+  attr_reader :db, :table, :columns
+
+  def initialize(db, table, columns)
+    @db = db
+    @table = table
+    @columns = columns
+    @queue = []
+  end
+
+  def insert(values)
+    @queue << values
+    flush! if @queue.length > 100
+  end
+
+  def flush!
+    return if @queue.empty?
+
+    db.exec_params(
+      "INSERT INTO \"#{table}\" (#{column_names}) VALUES #{placeholders}",
+      @queue.flatten
+    )
+
+    @queue = []
+  end
+
+  private
+
+  def column_names
+    columns.keys.map { |k| "\"#{k}\"" }.join(", ")
+  end
+
+  def placeholders
+    (1..(@queue.length * columns.length))
+      .map { |n| "$#{n}" }
+      .each_slice(columns.length)
+      .map { |v| "(#{v.join(', ')})" }
+      .join(", ")
+  end
+end
+
 source = Mysql2::Client.new(
   host: "localhost",
   username: ENV["MYSQL_USER"] || "root",
@@ -75,8 +116,7 @@ tables.each do |table, columns|
   bar = ProgressBar.new(row_count)
   target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY")
 
-  column_names = columns.keys.map { |k| "\"#{k}\"" }.join(", ")
-  placeholders = (1..columns.length).map { |n| "$#{n}" }.join(", ")
+  inserter = BulkInserter.new(target, table, columns)
 
   # Copy rows
   source.query("SELECT * FROM `#{table}`", stream: true, cache_rows: false).each do |row|
@@ -84,12 +124,11 @@ tables.each do |table, columns|
       coerce_value(opts[:data_type], row[name])
     end
 
-    target.exec_params(
-      "INSERT INTO \"#{table}\" (#{column_names}) VALUES (#{placeholders})",
-      values
-    )
+    inserter.insert(values)
     bar.increment! if row_count > 1000
   end
+  inserter.flush!
+  target.exec("COMMIT")
 
   # Update id_seq
   next unless columns.keys.include?("id")
@@ -100,5 +139,4 @@ tables.each do |table, columns|
     "ALTER SEQUENCE \"#{table}_id_seq\" RESTART WITH " +
     (max_id.to_i + 1).to_s
   )
-  target.exec("COMMIT")
 end
