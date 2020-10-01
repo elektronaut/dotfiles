@@ -56,6 +56,7 @@ tables = target.exec("SELECT table_name
   end
 end
 
+
 tables.each do |table, columns|
   if table == "schema_migrations"
     puts "Skipping table '#{table}'..."
@@ -67,6 +68,7 @@ tables.each do |table, columns|
     next
   end
 
+  target.exec("BEGIN")
   row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
                     .to_a.first["row_count"]
   puts "Converting table '#{table}' (#{row_count} rows)..."
@@ -98,4 +100,5 @@ tables.each do |table, columns|
     "ALTER SEQUENCE \"#{table}_id_seq\" RESTART WITH " +
     (max_id.to_i + 1).to_s
   )
+  target.exec("COMMIT")
 end
