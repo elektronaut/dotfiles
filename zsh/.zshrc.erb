@@ -1,3 +1,5 @@
+[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+
 ~/.bin/update_dotfiles_daily
 
 # Path to your oh-my-zsh configuration.
@@ -43,5 +45,3 @@ export SAVEHIST=512000
 <% end %>
 
 export LC_CTYPE="en_US.UTF-8"
-
-[[ $term == "dumb" ]] && unsetopt zle && export PS1='$ '
