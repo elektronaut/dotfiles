@@ -1,0 +1,16 @@
+#!/bin/bash
+
+user=$(whoami)
+host=$(hostname)
+params=()
+for p in "$@"; do
+    if [ "$p" == "-n" ]; then
+        params+=( "$p" )
+    elif [ "${p:0:1}" == "+" ]; then
+        params+=( "$p" )
+    else
+        params+=( "/ssh:${user}@${host}:"$(readlink -f $p) )
+    fi
+done
+
+echo "open ${params[@]}" | nc localhost 9999
