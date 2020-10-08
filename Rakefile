@@ -130,7 +130,7 @@ namespace :oh_my_zsh do
   desc "Update oh-my-zsh"
   task :update do
     if File.exist?(home_dir.join(".oh-my-zsh"))
-      `cd "#{home_dir.join(".oh-my-zsh")}" && git pull -q origin master`
+      `cd "#{home_dir.join(".oh-my-zsh")}" && git checkout custom && git pull -q origin master`
     else
       puts "oh-my-zsh not found, run rake oh_my_zsh:install."
     end
