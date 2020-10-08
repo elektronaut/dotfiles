@@ -152,7 +152,7 @@ namespace :update do
     unless crontab =~ /update_dotfiles/
       crontab += "\n03 * * * * ~/.bin/update_dotfiles >/dev/null 2> /dev/null"
       file = Tempfile.new("updated-cron")
-      file.write(crontab)
+      file.write(crontab + "\n")
       file.rewind
       file.close
       `crontab #{file.path}`
