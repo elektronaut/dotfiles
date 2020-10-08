@@ -4,7 +4,9 @@ export PATH=$HOME/.bin:$HOME/.iterm2:$HOME/.rbenv/bin:$HOME/.rbenv/shims:/usr/lo
 export MYSQL_REMOTE_USER="<%= secret(:mysql_remote_user) %>"
 export MYSQL_REMOTE_PASSWORD="<%= secret(:mysql_remote_password) %>"
 
-<% if !osx? %>
+<% if osx? %>
+export ANYONE_SERVERS=(pages1.cloud.anyone.no pages2.cloud.anyone.no pages3.cloud.anyone.no pages4.cloud.anyone.no pages5.cloud.anyone.no pages6.cloud.anyone.no pages7.cloud.anyone.no pages8.cloud.anyone.no pages9.cloud.anyone.no pages10.cloud.anyone.no pages11.cloud.anyone.no pages12.cloud.anyone.no pages13.cloud.anyone.no auksjon3000.cloud.anyone.no bylarm.cloud.anyone.no delegatbase.cloud.anyone.no kulturrom.cloud.anyone.no kundebilag4.cloud.anyone.no kunstnerforbundet.cloud.anyone.no mail.cloud.anyone.no musikkfest.cloud.anyone.no static.cloud.anyone.no puppet.cloud.anyone.no)
+<% else %>
 export RBENV_ROOT=/usr/local/rbenv
 export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
 <% end %>
