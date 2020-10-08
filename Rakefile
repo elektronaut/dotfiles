@@ -150,7 +150,7 @@ namespace :update do
   task :crontab do
     crontab = `crontab -l 2> /dev/null`.strip
     unless crontab =~ /update_dotfiles/
-      crontab += "\n\n05 * * * * ~/.bin/update_dotfiles >/dev/null 2> /dev/null"
+      crontab += "\n\n#{rand(59)} * * * * ~/.bin/update_dotfiles >/dev/null 2> /dev/null"
       file = Tempfile.new("updated-cron")
       file.write(crontab + "\n")
       file.rewind
