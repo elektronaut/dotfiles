@@ -2,6 +2,7 @@ require "pathname"
 require "find"
 require "fileutils"
 require "erb"
+require "tempfile"
 require "yaml"
 
 class TemplateRenderer
@@ -145,6 +146,19 @@ namespace :oh_my_zsh do
 end
 
 namespace :update do
+  desc "Update crontab"
+  task :crontab do
+    crontab = `crontab -l 2> /dev/null`.strip
+    unless crontab =~ /update_dotfiles/
+      crontab += "\n03 * * * * ~/.bin/update_dotfiles >/dev/null 2> /dev/null"
+      file = Tempfile.new("updated-cron")
+      file.write(crontab)
+      file.rewind
+      file.close
+      `crontab #{file.path}`
+    end
+  end
+
   desc "Updates packages"
   task :packages do
     packages.each do |package|
@@ -165,7 +179,8 @@ task :default => [:update]
 desc "Updates everything"
 task :update => [
   "oh_my_zsh:update",
-  "update:packages"
+  "update:packages",
+  "update:crontab"
 ] do
   puts "OK"
 end
