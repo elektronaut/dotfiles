@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+source_file = ARGV.first
+
+unless source_file
+  puts "Usage: #{$0} source.svg ('#bgcolor')"
+  exit
+end
+
+basename = File.basename(source_file, ".*")
+
+bg_color = ARGV[1] || "#ffffff"
+
+# PNGs
+`convert -background None -density 1024 -resize 512x512! -gravity center "#{source_file}" "#{basename}-512x512.png"`
+`convert -background None -density 384 -resize 192x192! -gravity center "#{source_file}" "#{basename}-192x192.png"`
+
+# ICO file
+`convert -background None -density 64 -resize 32x32! -gravity center -flatten -colors 256 "#{source_file}" "#{basename}.ico"`
+
+# Apple Touch icon
+`convert -background '#{bg_color}' -density 320 -resize 160x160! -gravity center "#{source_file}" -extent 180x180 "#{basename}-apple-touch-icon.png"`
