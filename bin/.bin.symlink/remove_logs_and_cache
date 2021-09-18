@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "progress_bar"
+end
+
+require "find"
+require "fileutils"
+require "pathname"
+
+root = Pathname.new(ARGV.first || Dir.pwd).expand_path
+
+patterns = [/log\/.+\.log$/,
+            /public\/packs\/.+/,
+            /public\/packs-test\/.+/,
+            /tmp\/cache\/.+/]
+
+to_remove = []
+
+print "Scanning..."
+Find.find(root) do |path|
+  Find.prune if [".git", "node_modules"].include?(File.basename(path))
+
+  if patterns.map { |p| p =~ path }.any?
+    to_remove << path
+    Find.prune
+  end
+end
+
+puts "OK, removing #{to_remove.length} items..."
+bar = ProgressBar.new(to_remove.length)
+
+total_size = 0
+to_remove.each do |path|
+  bar.increment!
+  total_size += `du -sk "#{path}"`.split(" ").first.to_i
+  FileUtils.rm_rf(path)
+end
+
+puts "Removed #{(total_size.to_f / (1000 * 1000)).round(2)}GB"
