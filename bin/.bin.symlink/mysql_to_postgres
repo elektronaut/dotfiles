@@ -85,7 +85,7 @@ end
 
 tables = target.exec("SELECT table_name
                       FROM information_schema.tables
-                      WHERE table_schema = 'public'")
+                      WHERE table_schema = 'public' AND table_name != 'schema_migrations'")
                .each_with_object({}) do |row, hash|
   table_name = row.values_at("table_name").first
 
@@ -100,24 +100,25 @@ tables = target.exec("SELECT table_name
   end
 end
 
+target.exec("BEGIN")
+
+puts "Truncating target tables..."
+tables.keys.each do |table|
+  next unless source.query("SHOW TABLES LIKE \"#{table}\"").to_a.any?
+  target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY CASCADE")
+end
+
 
 tables.each do |table, columns|
-  if table == "schema_migrations"
-    puts "Skipping table '#{table}'..."
-    next
-  end
-
   unless source.query("SHOW TABLES LIKE \"#{table}\"").to_a.any?
     puts "Warning: Source table '#{table}' does not exist, skipping..."
     next
   end
 
-  target.exec("BEGIN")
   row_count = source.query("SELECT COUNT(*) AS row_count FROM `#{table}`")
                     .to_a.first["row_count"]
   puts "Converting table '#{table}' (#{row_count} rows)..."
   bar = ProgressBar.new(row_count)
-  target.exec("TRUNCATE \"#{table}\" RESTART IDENTITY")
 
   inserter = BulkInserter.new(target, table, columns)
 
@@ -131,7 +132,6 @@ tables.each do |table, columns|
     bar.increment! if row_count > 1000
   end
   inserter.flush!
-  target.exec("COMMIT")
 
   # Update id_seq
   next unless columns.keys.include?("id")
@@ -143,3 +143,5 @@ tables.each do |table, columns|
     (max_id.to_i + 1).to_s
   )
 end
+
+target.exec("COMMIT")
