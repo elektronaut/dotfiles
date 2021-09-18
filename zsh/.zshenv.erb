@@ -1,8 +1,12 @@
 export GOPATH="$HOME/Dev/go"
 export LC_CTYPE="en_US.UTF-8"
 export PATH=$HOME/.bin:$HOME/.iterm2:$HOME/.rbenv/bin:$HOME/.rbenv/shims:/usr/local/opt/qt@5.5/bin:/usr/local/rbenv/bin:/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin:/usr/local/mysql/bin
+export RIPGREP_CONFIG_PATH=~/.rgconfig
+export GITHUB_TOKEN="<%= secret :github_token %>"
 export MYSQL_REMOTE_USER="<%= secret(:mysql_remote_user) %>"
 export MYSQL_REMOTE_PASSWORD="<%= secret(:mysql_remote_password) %>"
+export DO_SPACES_ID="<%= secret(:do_spaces_id) %>"
+export DO_SPACES_SECRET="<%= secret(:do_spaces_secret) %>"
 
 <% if osx? %>
 export ANYONE_SERVERS=(pages1.cloud.anyone.no pages2.cloud.anyone.no pages3.cloud.anyone.no pages4.cloud.anyone.no pages5.cloud.anyone.no pages6.cloud.anyone.no pages7.cloud.anyone.no pages8.cloud.anyone.no pages9.cloud.anyone.no pages10.cloud.anyone.no pages11.cloud.anyone.no pages12.cloud.anyone.no pages13.cloud.anyone.no auksjon3000.cloud.anyone.no bylarm.cloud.anyone.no delegatbase.cloud.anyone.no kulturrom.cloud.anyone.no kundebilag4.cloud.anyone.no kunstnerforbundet.cloud.anyone.no mail.cloud.anyone.no musikkfest.cloud.anyone.no static.cloud.anyone.no puppet.cloud.anyone.no)

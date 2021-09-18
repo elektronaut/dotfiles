@@ -33,10 +33,6 @@ class TemplateRenderer
     ENV["RBENV"] || `which rbenv` =~ /(bin|libexec)\/rbenv/
   end
 
-  def pow?
-    File.exists?(home_dir.join(".pow"))
-  end
-
   def result
     @template.result(get_binding)
   end
