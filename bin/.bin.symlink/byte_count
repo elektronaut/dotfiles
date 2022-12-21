@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "pastel"
+  gem "tty-table"
+end
+
+def format_character(c)
+  c.inspect
+end
+
+str = $stdin.read
+
+chars = {}
+total = 0
+
+str.chars.each do |c|
+  chars[c] ||= 0
+  chars[c] += 1
+  total += 1
+end
+
+sorted = chars.to_a.sort { |a, b| b.last <=> a.last }
+
+table = TTY::Table.new(
+  ["Character", "Count", "%"],
+  sorted.map do |r|
+    [format_character(r[0]),
+     r[1],
+     "%.2f" % ((r[1].to_f / total) * 100)]
+  end
+)
+
+puts table.render(:unicode,
+                  padding: [0, 1, 0, 1],
+                  alignments: [:left, :right, :right])
+
+puts "Total: #{total}"

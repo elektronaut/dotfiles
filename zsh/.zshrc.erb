@@ -24,7 +24,7 @@ plugins+=(ruby rails rake gem bundler capistrano)
 plugins+=(node npm yarn)
 plugins+=(lein)
 plugins+=(docker docker-compose doctl kubectl)
-<% if osx? %>plugins+=(emacs osx brew sublime zsh-autosuggestions)<% end %>
+<% if osx? %>plugins+=(emacs macos brew sublime zsh-autosuggestions)<% end %>
 <% if rbenv? %>plugins+=(rbenv)<% end %>
 
 source $ZSH/oh-my-zsh.sh
@@ -35,6 +35,9 @@ source ~/.zsh_vterm_integration.zsh
 
 export HISTSIZE=512000
 export SAVEHIST=512000
+setopt sharehistory
+setopt appendhistory
+setopt inc_append_history
 
 <% if osx? %>
   export GIT_EDITOR=$EDITOR

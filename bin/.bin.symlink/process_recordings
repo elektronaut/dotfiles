@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "progress_bar"
+end
+
+require "find"
+require "fileutils"
+require "pathname"
+
+root = Pathname.new(ARGV.first || Dir.pwd).expand_path
+
+dates = {}
+
+Dir.entries(root).select { |f| f =~ /[\d]+_[\d]+\.wav$/ }.sort.each do |filename|
+  date_part, _ = filename.split("_")
+  date = Date.parse(date_part).strftime("%Y-%m-%d")
+
+  dates[date] ||= []
+  dates[date] << filename
+end
+
+puts "Processing recordings..."
+bar = ProgressBar.new(dates.values.flatten.length)
+dates.each do |date, files|
+  command = "sox -G #{files.join(' ')} #{date}.wav rate 44100"
+  success = system(command)
+  bar.increment!(files.length)
+end
