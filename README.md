@@ -6,7 +6,7 @@ scripts. These are mine.
 
 ## Setup
 
-First, install [chezmoi](https://www.chezmoi.io/) and [oh-my-zsh](https://ohmyz.sh/).
+First, install [chezmoi](https://www.chezmoi.io/).
 
 Checkout the repo:
 
