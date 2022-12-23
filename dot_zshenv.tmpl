@@ -2,9 +2,12 @@ export GOPATH="$HOME/Dev/go"
 export LC_CTYPE="en_US.UTF-8"
 
 export RIPGREP_CONFIG_PATH=~/.rgconfig
+
+{{- if eq .chezmoi.hostname "Unbank" }}
 export GITHUB_TOKEN="{{ pass "github-token" }}"
 export DO_SPACES_ID="{{ pass "do-spaces-id" }}"
 export DO_SPACES_SECRET="{{ pass "do-spaces-secret" }}"
+{{- end }}
 
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin
 {{- if eq .chezmoi.os "darwin" }}

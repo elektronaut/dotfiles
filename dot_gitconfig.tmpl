@@ -9,9 +9,11 @@
 	diff = auto
 	interactive = auto
 	status = auto
+{{- if eq .chezmoi.hostname "Unbank" }}
 [github]
 	user = elektronaut
         token = {{ pass "github-elektronaut" }}
+{{- end }}
 [push]
         default = simple
 [pull]
