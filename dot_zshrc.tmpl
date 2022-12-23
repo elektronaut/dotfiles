@@ -27,7 +27,10 @@ plugins+=(docker docker-compose doctl kubectl)
 {{- if eq .chezmoi.os "darwin" }}
 plugins+=(emacs macos brew sublime zsh-autosuggestions)
 {{- end }}
-plugins+=(rbenv)
+
+if [[ -d ~/.rbenv || -d /usr/local/rbenv ]] ; then
+  plugins+=(rbenv)
+fi
 
 source $ZSH/oh-my-zsh.sh
 source ~/.iterm2_shell_integration.zsh

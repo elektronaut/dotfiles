@@ -3,5 +3,5 @@ README.md
 {{- if ne .chezmoi.hostname "Unbank" }}
 .mbsyncrc
 .config/rclone/rclone.conf
-.iterm2*
+.iterm2
 {{- end }}

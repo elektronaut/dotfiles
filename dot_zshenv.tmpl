@@ -10,19 +10,16 @@ export DO_SPACES_SECRET="{{ pass "do-spaces-secret" }}"
 {{- end }}
 
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin
-{{- if eq .chezmoi.os "darwin" }}
-export RBENV_ROOT=$HOME/.rbenv
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-{{- else }}
-export RBENV_ROOT=/usr/local/rbenv
-{{- end }}
-export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
-export PATH="$HOME/.bin:$HOME/.iterm2:$PATH"
+
+if [[ -d ~/.rbenv ]] ; then
+  export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+  eval "$(rbenv init -)"
+elif [[ -d /usr/local/rbenv ]] ; then
+  export PATH="/usr/local/rbenv/bin:/usr/local/rbenv/shims:$PATH"
+  eval "$(rbenv init -)"
+fi
 
 {{- if eq .chezmoi.os "darwin" }}
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export SHELL_SESSIONS_DISABLE=1
 {{- end }}
-
-
-# Load rbenv
-eval "$(rbenv init -)"
