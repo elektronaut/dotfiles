@@ -10,6 +10,7 @@ export DO_SPACES_SECRET="<%= secret(:do_spaces_secret) %>"
 
 <% if osx? %>
 export SHELL_SESSIONS_DISABLE=1
+eval "$(/opt/homebrew/bin/brew shellenv)
 <% else %>
 export RBENV_ROOT=/usr/local/rbenv
 export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
