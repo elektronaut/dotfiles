@@ -1,0 +1,28 @@
+[user]
+	name = Inge Jørgensen
+	email = inge@elektronaut.no
+[core]
+	excludesfile = ~/.gitignore
+	quotepath = false
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+[github]
+	user = elektronaut
+        token = {{ pass "github-elektronaut" }}
+[push]
+        default = simple
+[pull]
+        ff = only
+[pretty]
+        relnote = - %s %C(cyan)(%an)%C(reset)
+
+[include]
+        path = ~/.gitconfig.aliases
+
+[includeIf "gitdir:~/Dev/anyone/"]
+	path = ~/.gitconfig.anyone
+[init]
+	defaultBranch = main

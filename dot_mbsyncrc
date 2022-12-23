@@ -1,0 +1,72 @@
+# ---- Anyone -----------------------------------------------------------------
+
+IMAPStore anyone-remote
+Host imap.gmail.com
+SSLType IMAPS
+AuthMechs LOGIN
+User inge@anyone.no
+PassCmd "pass show mbsync-anyone"
+# PassCmd "op read --account anyone.1password.com op://Personal/mbsync-anyone/password"
+# Pass 123456
+
+MaildirStore anyone-local
+Path ~/Mail/anyone/
+Inbox ~/Mail/anyone/INBOX
+Subfolders Verbatim
+
+Channel anyone
+Far :anyone-remote:
+Near :anyone-local:
+Create Both
+Expunge Both
+Patterns *
+# Patterns * !"[Gmail]/Spam"
+SyncState *
+
+
+# ---- Elektronaut ------------------------------------------------------------
+
+IMAPStore elektronaut-remote
+Host imap.gmail.com
+SSLType IMAPS
+AuthMechs LOGIN
+User inge@elektronaut.no
+PassCmd "pass show mbsync-elektronaut"
+
+MaildirStore elektronaut-local
+Path ~/Mail/elektronaut/
+Inbox ~/Mail/elektronaut/INBOX
+Subfolders Verbatim
+
+Channel elektronaut
+Far :elektronaut-remote:
+Near :elektronaut-local:
+Create Both
+Expunge Both
+Patterns *
+# Patterns * !"[Gmail]/Spam"
+SyncState *
+
+
+# ---- iCloud -----------------------------------------------------------------
+
+IMAPStore icloud-remote
+Host imap.mail.me.com
+SSLType IMAPS
+AuthMechs LOGIN
+User ingej
+PassCmd "pass show mbsync-icloud"
+
+MaildirStore icloud-local
+Path ~/Mail/icloud/
+Inbox ~/Mail/icloud/INBOX
+Subfolders Verbatim
+
+Channel icloud
+Far :icloud-remote:
+Near :icloud-local:
+Create Both
+Expunge Both
+Patterns *
+# Patterns * !"[Gmail]/Spam"
+SyncState *
