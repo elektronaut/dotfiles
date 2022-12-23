@@ -1,7 +1,0 @@
-#!/usr/bin/env ruby
-
-if ARGV.length > 0 && ARGV.first == 'all'
-  puts `cd ~/.dotfiles && git pull -q && rake update:all`
-else
-  puts `cd ~/.dotfiles && git pull -q && rake`
-end
