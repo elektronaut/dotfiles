@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+filename = ARGV.first
+unless filename
+  puts "USAGE: #{$0} <filename>"
+  exit
+end
+
+words = File.read(filename).split(/\s+/)
+
+$symbols = ":.\"_-/,=()#><;%{}'|@$][&*?`\\+!~^".chars
+
+def ngrams(str, len = 3)
+  return [] if str.length < len
+
+  results = []
+  0.upto(str.length - len).each { |i| results << str[i, len] }
+  results
+end
+
+def symbols_ngram?(str)
+  str.chars.each { |c| return false unless $symbols.include?(c) }
+  true
+end
+
+def print_results(hash)
+  hash.to_a.sort { |a, b| b.last <=> a.last }.each do |str, value|
+    puts "#{str} #{value}"
+  end
+end
+
+single = Hash.new(0)
+bigrams = Hash.new(0)
+trigrams = Hash.new(0)
+
+$symbols.each do |i|
+  $symbols.each do |j|
+    bigrams["#{i}#{j}"] = 0
+  end
+end
+
+words.each do |word|
+  ngrams(word, 1).filter { |n| symbols_ngram?(n) }.each do |ngram|
+    single[ngram] += 1
+  end
+  ngrams(word, 2).filter { |n| symbols_ngram?(n) }.each do |ngram|
+    bigrams[ngram] += 1
+  end
+  ngrams(word, 3).filter { |n| symbols_ngram?(n) }.each do |ngram|
+    trigrams[ngram] += 1
+  end
+end
+
+puts "Counts\n======\n"
+print_results(single)
+puts
+puts "Bigrams\n=======\n"
+print_results(bigrams)
+puts
+puts "Trigrams\n========\n"
+print_results(trigrams)
