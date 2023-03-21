@@ -20,7 +20,7 @@ files.each do |file|
 
   puts "-----------------------------------------------------------------------------------------"
   puts "Converting #{files.index(file)+1}/#{files.length}: #{File.basename(file)}...\n\n"
-  if File.exists?(mp3file)
+  if File.exist?(mp3file)
     puts "ERROR: File exists! #{mp3file}"
     exit
   end
