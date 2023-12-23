@@ -45,7 +45,6 @@ setopt inc_append_history
 
 {{- if eq .chezmoi.os "darwin" }}
 export GIT_EDITOR=$EDITOR
-export SSL_CERT_FILE=/usr/local/etc/openssl/certs/cert.pem
 ssh-add -A 2>/dev/null
 eval "$(/opt/homebrew/bin/brew shellenv)"
 {{- else }}

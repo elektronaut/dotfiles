@@ -14,6 +14,7 @@ export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/s
 {{- if eq .chezmoi.os "darwin" }}
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export SHELL_SESSIONS_DISABLE=1
+export SSL_CERT_FILE=/opt/homebrew/etc/ca-certificates/cert.pem
 {{- end }}
 
 if [[ -d ~/.rbenv ]] ; then
