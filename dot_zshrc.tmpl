@@ -32,6 +32,10 @@ if [[ -d ~/.rbenv || -d /usr/local/rbenv ]] ; then
   plugins+=(rbenv)
 fi
 
+if [[ -d ~/.asdf ]] ; then
+  plugins+=(asdf)
+fi
+
 source $ZSH/oh-my-zsh.sh
 source ~/.iterm2_shell_integration.zsh
 source ~/.zsh_vterm_integration.zsh
