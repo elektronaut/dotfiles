@@ -9,7 +9,11 @@ export DO_SPACES_ID="{{ pass "do-spaces-id" }}"
 export DO_SPACES_SECRET="{{ pass "do-spaces-secret" }}"
 {{- end }}
 
-export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin
+if [[ -x /usr/libexec/path_helper ]] ; then
+  eval `/usr/libexec/path_helper -s`
+else
+  export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11/bin:/usr/bin/X11:/usr/games:/usr/X11R6/bin
+fi
 
 {{- if eq .chezmoi.os "darwin" }}
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
