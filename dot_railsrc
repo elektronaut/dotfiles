@@ -1,0 +1,10 @@
+--database=postgresql
+--javascript=esbuild
+--css=postcss
+
+--skip-action-cable
+--skip-action-text
+--skip-active-storage
+--skip-hotwire
+--skip-jbuilder
+--skip-test
