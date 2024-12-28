@@ -9,11 +9,6 @@
 	diff = auto
 	interactive = auto
 	status = auto
-{{- if eq .chezmoi.hostname "Unbank" }}
-[github]
-	user = elektronaut
-        token = {{ pass "github-elektronaut" }}
-{{- end }}
 [push]
         default = simple
 [pull]
@@ -28,3 +23,7 @@
 	path = ~/.gitconfig.anyone
 [init]
 	defaultBranch = main
+{{- if eq .chezmoi.hostname "Nurula" }}
+[github]
+	user = elektronaut
+{{- end }}

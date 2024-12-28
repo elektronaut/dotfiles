@@ -25,15 +25,15 @@ plugins+=(node npm yarn)
 plugins+=(lein)
 plugins+=(docker docker-compose doctl kubectl)
 {{- if eq .chezmoi.os "darwin" }}
-plugins+=(emacs macos brew sublime zsh-autosuggestions)
+plugins+=(1password emacs macos brew sublime zsh-autosuggestions)
 {{- end }}
 
 if [[ -d ~/.rbenv || -d /usr/local/rbenv ]] ; then
-  plugins+=(rbenv)
+    plugins+=(rbenv)
 fi
 
 if [[ -d ~/.asdf ]] ; then
-  plugins+=(asdf)
+    plugins+=(asdf)
 fi
 
 source $ZSH/oh-my-zsh.sh
@@ -43,6 +43,7 @@ source ~/.zsh_vterm_integration.zsh
 # Customize to your needs...
 export HISTSIZE=512000
 export SAVEHIST=512000
+export HISTFILE=$HOME/.zshhistory
 setopt sharehistory
 setopt appendhistory
 setopt inc_append_history

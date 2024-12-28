@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require "pathname"
+
+files = Pathname.new(".").glob("app/assets/stylesheets/**/*.scss")
+replacements = 0
+
+files.each do |file|
+  content = File.read(file)
+
+  # Expand import globs
+  content.gsub!(/@import "([\w\d\/\*]+)"/) do |str|
+    pattern = Regexp.last_match[1]
+    next str unless pattern =~ /\*/
+
+    replacements += 1
+    imports = file.dirname.glob(pattern).map { |p|
+      p.relative_path_from(file.dirname).to_s.gsub(/\.s?css$/, "")
+    }
+    "@import " + imports.map { |i| "\"#{i}\"" }.join(", ")
+  end
+
+  # Asset helpers
+  content.gsub!(/[\w\d\-_]+url\(["']?([^"']*)["']?\)/) do
+    replacements += 1
+    url = Regexp.last_match[1]
+    "url(\"/#{url}\")"
+  end
+
+  File.write(file, content)
+end
+
+puts "#{files.length} files scanned, #{replacements} replacements performed."
