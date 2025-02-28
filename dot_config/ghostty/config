@@ -1,0 +1,18 @@
+font-family = "FiraCode Nerd Font Mono"
+font-size = 12
+adjust-cell-height = 12%
+theme = "elektronaut"
+window-padding-x = 9
+window-padding-y = 9
+window-width = 160
+window-height = 40
+keybind = cmd+left=previous_tab
+keybind = cmd+right=next_tab
+keybind = cmd+alt+left=previous_tab
+keybind = cmd+alt+right=next_tab
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
+background-opacity = 0.98
+background-blur-radius = 20
+macos-titlebar-style = tabs
+keybind = global:cmd+escape=toggle_quick_terminal
