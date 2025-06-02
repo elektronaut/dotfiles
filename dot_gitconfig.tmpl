@@ -23,7 +23,7 @@
 	path = ~/.gitconfig.anyone
 [init]
 	defaultBranch = main
-{{- if eq .chezmoi.hostname "Nurula" }}
+{{- if has .chezmoi.hostname (list "Nurula" "Maru") }}
 [github]
 	user = elektronaut
 {{- end }}

@@ -19,6 +19,7 @@ fi
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export SHELL_SESSIONS_DISABLE=1
 export SSL_CERT_FILE=/opt/homebrew/etc/ca-certificates/cert.pem
+export WEB_CONCURRENCY=0
 {{- end }}
 
 if [[ -d ~/.rbenv ]] ; then
