@@ -36,6 +36,11 @@ if [[ -d ~/.asdf ]] ; then
     plugins+=(asdf)
 fi
 
+if command -v mise &> /dev/null ; then
+    plugins+=(mise)
+    eval "$(mise activate zsh --shims)"
+fi
+
 source $ZSH/oh-my-zsh.sh
 source $ZDOTDIR/iterm2_shell_integration.zsh
 source $ZDOTDIR/zsh_vterm_integration.zsh
