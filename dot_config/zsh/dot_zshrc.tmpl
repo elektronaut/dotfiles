@@ -36,9 +36,9 @@ if [[ -d ~/.asdf ]] ; then
     plugins+=(asdf)
 fi
 
-if command -v mise &> /dev/null ; then
+if [[ -f ~/.local/bin/mise ]] ; then
     plugins+=(mise)
-    eval "$(mise activate zsh --shims)"
+    eval "$(~/.local/bin/mise activate zsh)"
 fi
 
 source $ZSH/oh-my-zsh.sh
