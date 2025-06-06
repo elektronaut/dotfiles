@@ -1,4 +1,4 @@
-sugar=~/Dev/projects/sugar
+b3s=~/Dev/projects/b3s
 aa=~/Dev/anyone/apps
 pr=~/Dev/projects
 dgems=~/Dev/gems

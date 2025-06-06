@@ -3,5 +3,5 @@ idiomatic_version_file_enable_tools = []
 experimental = true
 
 [tools]
-node = "22"
+node = "latest"
 ruby = "3.4"
