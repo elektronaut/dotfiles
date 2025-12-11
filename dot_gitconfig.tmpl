@@ -21,6 +21,8 @@
 
 [includeIf "gitdir:~/Dev/anyone/"]
 	path = ~/.gitconfig.anyone
+[includeIf "gitdir:~/Dev/make/"]
+	path = ~/.gitconfig.make
 [init]
 	defaultBranch = main
 {{- if has .chezmoi.hostname (list "Nurula" "Maru") }}
