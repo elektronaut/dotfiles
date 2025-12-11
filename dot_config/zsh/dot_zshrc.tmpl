@@ -46,6 +46,11 @@ source $ZDOTDIR/iterm2_shell_integration.zsh
 source $ZDOTDIR/zsh_vterm_integration.zsh
 source $HOME/.config/broot/launcher/bash/br
 
+# Source .profile for environment variables
+if [ -f ~/.profile ]; then
+    source ~/.profile
+fi
+
 # Customize to your needs...
 export HISTSIZE=512000
 export SAVEHIST=512000
