@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 90,
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_SHELL_PREFIX": "~/.claude/mise-wrapper.sh"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec rspec:*)",
+      "Bash(bundle exec rubocop:*)",
+      "Bash(bundle list:*)",
+      "Bash(gem list:*)",
+      "Bash(gem search:*)",
+      "Bash(git -C * diff*)",
+      "Bash(git -C * log*)",
+      "Bash(git -C * show*)",
+      "Bash(git -C * status*)",
+      "Bash(git show-ref*)",
+      "Bash(grep:*)",
+      "Bash(npm run test:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(rg:*)",
+      "Bash(rspec:*)",
+      "Bash(rubocop:*)",
+      "Bash(whois:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ietf.org)",
+      "WebFetch(domain:logger.rocketjob.io)",
+      "WebFetch(domain:www.rfc-editor.org)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'file_path=$(jq -r \".tool_input.file_path\" <<< \"$HOOK_INPUT\"); if [[ \"$file_path\" == *.rb || \"$file_path\" == *.rake || \"$file_path\" == *Rakefile || \"$file_path\" == *Gemfile ]]; then echo \"Running rubocop on $file_path\"; rubocop -a \"$file_path\" 2>&1 || true; fi'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$HOME/.claude/statusline-command.sh\""
+  },
+  "alwaysThinkingEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754086070803
+  },
+  "enabledPlugins": {
+    "code-simplifier@claude-plugins-official": true
+  }
+}
