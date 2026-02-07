@@ -42,8 +42,8 @@ if [[ -f ~/.local/bin/mise ]] ; then
 fi
 
 source $ZSH/oh-my-zsh.sh
-source $ZDOTDIR/iterm2_shell_integration.zsh
-source $ZDOTDIR/zsh_vterm_integration.zsh
+[[ "$TERM_PROGRAM" == "iTerm.app" ]] && source $ZDOTDIR/iterm2_shell_integration.zsh
+[[ "$INSIDE_EMACS" == "vterm" ]] && source $ZDOTDIR/zsh_vterm_integration.zsh
 source $HOME/.config/broot/launcher/bash/br
 
 # Source .profile for environment variables
