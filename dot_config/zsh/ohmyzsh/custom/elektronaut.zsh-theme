@@ -11,7 +11,7 @@ function no_git_prompt() {
 PROMPT=$'\n%K{blue}%F{black} @%B%m%b '
 PROMPT+='$(git_prompt_info)$(no_git_prompt)'
 PROMPT+='%{$bg[black]%}%{$fg[white]%} $(shorten_path) '
-PROMPT+=$'%K{default}%F{black}\uE0B0%{$reset_color%}%F{8} %#%{$reset_color%} '
+PROMPT+=$'%K{default}%F{black}\uE0B0%f%k%F{8} %#%f%k '
 
 #RPROMPT=$'%{$reset_color%}%K{default}%F{0}\uE0B2%K{0}%F{blue} %D{%F %T} %{$reset_color%}'
 
