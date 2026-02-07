@@ -16,4 +16,3 @@ background-opacity = 0.98
 background-blur-radius = 20
 macos-titlebar-style = tabs
 keybind = global:cmd+escape=toggle_quick_terminal
-keybind = shift+enter=text:\n

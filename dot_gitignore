@@ -11,8 +11,6 @@
 *.swo
 .\#*
 \#*\#
-.overmind.env
 config/master.key
 mise.local.toml
 .claude
-CLAUDE.local.md
