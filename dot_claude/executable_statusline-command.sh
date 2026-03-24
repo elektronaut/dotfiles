@@ -11,10 +11,10 @@ project_short="${project_dir/#$HOME/~}"
 current_relative="${current_dir/#$project_dir\//}"
 
 # Token usage
-tokens_used=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
 tokens_max=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
 token_pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 if [ "$tokens_max" -gt 0 ] 2>/dev/null; then
+  tokens_used=$(( tokens_max * token_pct / 100 ))
   tokens_k=$(( tokens_used / 1000 ))
   max_k=$(( tokens_max / 1000 ))
   token_display="${tokens_k}k/${max_k}k (${token_pct}%)"

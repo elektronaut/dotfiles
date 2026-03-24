@@ -53,11 +53,13 @@
     "type": "command",
     "command": "bash \"$HOME/.claude/statusline-command.sh\""
   },
+  "enabledPlugins": {
+    "code-simplifier@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "feedbackSurveyState": {
     "lastShownTime": 1754086070803
-  },
-  "enabledPlugins": {
-    "code-simplifier@claude-plugins-official": true
   }
 }
