@@ -3,7 +3,7 @@
   "cleanupPeriodDays": 90,
   "env": {
     "ENABLE_TOOL_SEARCH": "true",
-    "CLAUDE_CODE_SHELL_PREFIX": "~/.claude/mise-wrapper.sh"
+    "CLAUDE_CODE_SHELL_PREFIX": "/Users/inge/.claude/mise-wrapper.sh"
   },
   "attribution": {
     "commit": "",
