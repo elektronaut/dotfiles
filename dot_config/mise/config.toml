@@ -4,4 +4,7 @@ experimental = true
 
 [tools]
 node = "latest"
-ruby = "3.4"
+ruby = "4.0"
+
+[env]
+_.file = { path = "~/.config/mise/secrets.env", redact = true }
