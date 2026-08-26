@@ -1,0 +1,3 @@
+# Runs directly after /etc/zprofile, which re-runs path_helper and demotes
+# Homebrew and the mise shims below the system paths.
+[[ -r $ZDOTDIR/.zpath ]] && source $ZDOTDIR/.zpath
