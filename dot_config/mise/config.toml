@@ -1,9 +1,10 @@
 [settings]
-idiomatic_version_file_enable_tools = ["ruby"]
+idiomatic_version_file_enable_tools = ["ruby", "node"]
 experimental = true
 
 [tools]
 node = "latest"
+python = "3.14"
 ruby = "4.0"
 
 [env]

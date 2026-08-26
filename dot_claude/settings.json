@@ -36,6 +36,7 @@
     ],
     "deny": []
   },
+  "model": "opus[1m]",
   "hooks": {
     "PostToolUse": [
       {
@@ -80,8 +81,9 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
-  "model": "opus[1m]",
   "feedbackSurveyState": {
     "lastShownTime": 1754086070803
   }
