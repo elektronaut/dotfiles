@@ -6,3 +6,6 @@ scratch=~/Dev/scratch
 puppet=~/Dev/anyone/puppet
 
 alias deploy="git push; cap production deploy"
+
+alias cm="chezmoi"
+compdef cm=chezmoi
