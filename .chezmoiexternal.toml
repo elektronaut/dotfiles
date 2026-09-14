@@ -1,0 +1,13 @@
+[".config/zsh/ohmyzsh"]
+    type = "git-repo"
+    url = "https://github.com/ohmyzsh/ohmyzsh.git"
+    refreshPeriod = "168h"
+    clone.args = ["--depth=1"]
+    pull.args = ["--ff-only"]
+
+[".config/zsh/ohmyzsh-custom/plugins/zsh-autosuggestions"]
+    type = "git-repo"
+    url = "https://github.com/zsh-users/zsh-autosuggestions.git"
+    refreshPeriod = "168h"
+    clone.args = ["--depth=1"]
+    pull.args = ["--ff-only"]
