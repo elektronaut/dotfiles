@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "$1" = "--help" ] || [ "$1" = "--manual" ] || [ "$1" = "--version" ]; then
+    echo "Usage: xdg-open { file | URL }"
+    exit 0
+fi
+
+exec /usr/bin/open "$@"

@@ -1,0 +1,423 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "date"
+require "json"
+require "open3"
+require "optparse"
+require "set"
+require "time"
+
+class GithubReport
+  TRELLO_COMMENT = %r{github\.trello\.services|\A!\[\]\([^)]*trello[^)]*\)\s*\[[^\]]*\]\(https://trello\.com/}i
+
+  PR_SEARCH = <<~GRAPHQL
+    query($q: String!, $after: String) {
+      search(query: $q, type: ISSUE, first: 50, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          ... on PullRequest {
+            number title body state createdAt mergedAt additions deletions changedFiles
+            baseRefName headRefName
+            repository { nameWithOwner }
+            author { login }
+            mergedBy { login }
+            commits(first: 100) { nodes { commit { oid message } } }
+            reviews(first: 100) { nodes { author { login } state submittedAt } }
+            comments(first: 100) { nodes { author { login } body createdAt } }
+          }
+        }
+      }
+    }
+  GRAPHQL
+
+  Entry = Struct.new(:time, :text)
+  GhError = Class.new(StandardError)
+
+  def initialize(from:, to:, org:, local:, author:)
+    @from = from
+    @to = to
+    @org = org
+    @local = local
+    @author = author
+    @entries = []
+    @warnings = []
+  end
+
+  def run
+    @user = gh("user")["login"]
+    events, prs, issues = [-> { fetch_events }, -> { fetch_prs }, -> { fetch_issues }].map { |job| Thread.new(&job) }.map(&:value)
+
+    prs.each { |pr| collect_pr_entries(pr) }
+    collect_issue_entries(events, issues)
+    collect_push_entries(events, prs)
+    collect_branch_entries(events, prs)
+    collect_local_entries(prs) if @local
+
+    puts render(prs)
+  end
+
+  private
+
+  def gh(path, paginate: false, params: {})
+    args = ["gh", "api", "-X", "GET", path]
+    args += ["--paginate", "--slurp"] if paginate
+    params.each { |key, value| args += ["-f", "#{key}=#{value}"] }
+    out, err, status = Open3.capture3(*args)
+    raise GhError, "gh api #{path} failed: #{err.strip}" unless status.success?
+    data = JSON.parse(out)
+    paginate ? data.flat_map { |page| page.is_a?(Hash) ? page.fetch("items", [page]) : page } : data
+  end
+
+  def in_range?(timestamp)
+    return false unless timestamp
+
+    time = Time.parse(timestamp)
+    time >= @from && time < @to
+  end
+
+  def fetch_events
+    path = @org ? "users/#{@user}/events/orgs/#{@org}" : "users/#{@user}/events"
+    events = gh(path, paginate: true, params: { per_page: 100 })
+    oldest = events.map { |e| Time.parse(e["created_at"]) }.min
+    if oldest && oldest > @from
+      @warnings << "The event feed only reaches back to #{local(oldest)}; earlier pushes and branches are missing."
+    end
+    events.select { |e| e.dig("actor", "login") == @user && in_range?(e["created_at"]) }
+  end
+
+  def graphql(query, variables = {})
+    args = ["gh", "api", "graphql", "-f", "query=#{query}"]
+    variables.each { |key, value| args += ["-F", "#{key}=#{value}"] unless value.nil? }
+    out, err, status = Open3.capture3(*args)
+    raise GhError, "gh api graphql failed: #{err.strip}" unless status.success?
+
+    JSON.parse(out)["data"]
+  end
+
+  def fetch_prs
+    scope = @org ? " org:#{@org}" : ""
+    days = (@from.to_date...@to.to_date).map do |day|
+      "#{local_midnight(day).iso8601}..#{local_midnight(day + 1).iso8601}"
+    end
+    queries = ["involves:#{@user}", "reviewed-by:#{@user}"].product(days).map do |who, range|
+      "#{who} is:pr updated:#{range}#{scope}"
+    end
+
+    parallel_map(queries, threads: 16) { |q| search_prs(q) }.flatten
+                                                           .uniq { |pr| [pr[:repo], pr[:number]] }
+                                                           .sort_by { |pr| pr[:created_at] }
+  end
+
+  def local_midnight(date)
+    Time.local(date.year, date.month, date.day)
+  end
+
+  def search_prs(query)
+    prs = []
+    cursor = nil
+    loop do
+      search = graphql(PR_SEARCH, q: query, after: cursor)["search"]
+      prs.concat(search["nodes"].map { |node| normalize_pr(node) })
+      break unless search.dig("pageInfo", "hasNextPage")
+
+      cursor = search.dig("pageInfo", "endCursor")
+    end
+    prs
+  end
+
+  def normalize_pr(node)
+    user = ->(actor) { { "login" => actor&.dig("login") || "ghost" } }
+    {
+      repo: node.dig("repository", "nameWithOwner"),
+      number: node["number"],
+      title: node["title"],
+      author: user.(node["author"])["login"],
+      base: node["baseRefName"],
+      head: node["headRefName"],
+      state: node["mergedAt"] ? "merged" : node["state"].downcase,
+      created_at: node["createdAt"],
+      merged_at: node["mergedAt"],
+      merged_by: node.dig("mergedBy", "login"),
+      size: "#{node['changedFiles']} files, +#{node['additions']}/−#{node['deletions']}",
+      body: node["body"],
+      commits: node.dig("commits", "nodes").map { |c| { "sha" => c.dig("commit", "oid"), "commit" => { "message" => c.dig("commit", "message") } } },
+      reviews: node.dig("reviews", "nodes").map { |r| { "user" => user.(r["author"]), "state" => r["state"], "submitted_at" => r["submittedAt"] } },
+      comments: node.dig("comments", "nodes").map { |c| { "user" => user.(c["author"]), "body" => c["body"], "created_at" => c["createdAt"] } }
+    }
+  end
+
+  def parallel_map(items, threads: 12)
+    queue = Queue.new
+    items.each_with_index { |item, index| queue << [item, index] }
+    results = Array.new(items.size)
+    Array.new([threads, items.size].min) do
+      Thread.new do
+        loop do
+          item, index = queue.pop(true)
+          results[index] = yield(item)
+        rescue ThreadError
+          break
+        end
+      end
+    end.each(&:join)
+    results
+  end
+
+  def collect_pr_entries(pr)
+    ref = "#{short_repo(pr[:repo])}##{pr[:number]}"
+    mine = pr[:author] == @user
+
+    add(pr[:created_at], "Opened #{ref} **#{pr[:title]}** → `#{pr[:base]}` (#{pr[:size]})") if mine && in_range?(pr[:created_at])
+
+    if in_range?(pr[:merged_at]) && (mine || pr[:merged_by] == @user)
+      by = pr[:merged_by] == @user ? "" : " by #{pr[:merged_by]}"
+      add(pr[:merged_at], "#{ref} **#{pr[:title]}** merged#{by} into `#{pr[:base]}`")
+    end
+
+    pr[:reviews].each do |review|
+      next unless review.dig("user", "login") == @user && in_range?(review["submitted_at"])
+
+      add(review["submitted_at"], "Reviewed #{ref} **#{pr[:title]}** by #{pr[:author]}: #{review['state'].downcase.tr('_', ' ')}")
+    end
+
+    pr[:reviews].each do |review|
+      next if mine || review.dig("user", "login") == @user || !in_range?(review["submitted_at"])
+    end
+
+    pr[:comments].each do |comment|
+      next unless comment.dig("user", "login") == @user && in_range?(comment["created_at"])
+      next if comment["body"].to_s.match?(TRELLO_COMMENT)
+
+      add(comment["created_at"], "Commented on #{ref}: #{first_line(comment['body'])}")
+    end
+
+    return unless mine
+
+    pr[:reviews].each do |review|
+      login = review.dig("user", "login")
+      next if login == @user || !in_range?(review["submitted_at"])
+
+      add(review["submitted_at"], "#{login} #{review['state'].downcase.tr('_', ' ')} #{ref}")
+    end
+  end
+
+  def fetch_issues
+    range = "#{@from.iso8601}..#{@to.iso8601}"
+    scope = @org ? " org:#{@org}" : ""
+    gh("search/issues", paginate: true, params: { q: "author:#{@user} is:issue created:#{range}#{scope}", per_page: 100 })
+  end
+
+  def collect_issue_entries(events, issues)
+    issues.each do |issue|
+      ref = "#{short_repo(issue['repository_url'].sub(%r{.*/repos/}, ''))}##{issue['number']}"
+      add(issue["created_at"], "Opened issue #{ref} **#{issue['title']}** (#{issue['state']})")
+    end
+
+    events.each do |event|
+      next unless event["type"] == "IssueCommentEvent" && !event.dig("payload", "issue", "pull_request")
+      next if event.dig("payload", "comment", "body").to_s.match?(TRELLO_COMMENT)
+
+      ref = "#{short_repo(event.dig('repo', 'name'))}##{event.dig('payload', 'issue', 'number')}"
+      add(event["created_at"], "Commented on issue #{ref}: #{first_line(event.dig('payload', 'comment', 'body'))}")
+    end
+  end
+
+  def collect_push_entries(events, prs)
+    pushes = events.select { |e| e["type"] == "PushEvent" }
+    histories = parallel_map(pushes.each_slice(50).to_a) { |slice| push_histories(slice) }.flatten(1)
+
+    pushes.zip(histories).each do |event, history|
+      repo = event.dig("repo", "name")
+      branch = event.dig("payload", "ref").sub("refs/heads/", "")
+      pr = prs.find { |p| p[:repo] == repo && p[:head] == branch }
+      target = pr ? "#{short_repo(repo)}##{pr[:number]} (`#{branch}`)" : "`#{branch}` in #{short_repo(repo)}"
+      add(event["created_at"], push_text(event, history, target))
+    end
+  end
+
+  def push_histories(pushes)
+    fields = pushes.each_with_index.map do |event, index|
+      owner, name = event.dig("repo", "name").split("/", 2)
+      <<~GRAPHQL
+        p#{index}: repository(owner: #{owner.to_json}, name: #{name.to_json}) {
+          object(oid: #{event.dig('payload', 'head').to_json}) {
+            ... on Commit { history(first: 50) { nodes { oid message parents(first: 2) { nodes { oid } } } } }
+          }
+        }
+      GRAPHQL
+    end
+    data = graphql("query { #{fields.join} }")
+    pushes.each_index.map { |index| data.dig("p#{index}", "object", "history", "nodes") }
+  rescue GhError
+    Array.new(pushes.size)
+  end
+
+  def push_text(event, history, target)
+    return "Pushed to #{target}" unless history
+
+    before = event.dig("payload", "before")
+    return "Pushed a new branch #{target}" if before.match?(/\A0+\z/)
+
+    commits = history.to_h { |commit| [commit["oid"], commit] }
+    return "Force-pushed #{target} (rebased or amended)" unless commits.key?(before)
+
+    pushed = ancestors(commits, event.dig("payload", "head")) - ancestors(commits, before)
+    headlines = history.select { |commit| pushed.include?(commit["oid"]) }.reverse.map { |commit| first_line(commit["message"]) }
+    "Pushed #{pluralize(headlines.size, 'commit')} to #{target}: #{headlines.join('; ')}"
+  end
+
+  def ancestors(commits, oid)
+    seen = Set.new
+    queue = [oid]
+    while (current = queue.shift)
+      next unless commits.key?(current) && seen.add?(current)
+
+      queue.concat(commits[current].dig("parents", "nodes").map { |parent| parent["oid"] })
+    end
+    seen
+  end
+
+  def collect_branch_entries(events, prs)
+    events.select { |e| e["type"] == "CreateEvent" && e.dig("payload", "ref_type") == "branch" }.each do |event|
+      repo = event.dig("repo", "name")
+      branch = event.dig("payload", "ref")
+      next if prs.any? { |p| p[:repo] == repo && p[:head] == branch }
+
+      add(event["created_at"], "Created branch `#{branch}` in #{short_repo(repo)} (no PR)")
+    end
+  end
+
+  def collect_local_entries(prs)
+    pushed = prs.flat_map { |pr| pr[:commits].map { |c| c["sha"] } }.to_set
+    seen = Set.new
+
+    workspaces = find_workspaces
+    unless workspaces
+      @warnings << "No workspaces/ found above #{Dir.pwd}; local commits skipped."
+      return
+    end
+
+    Dir.glob(File.join(workspaces, "*", "*", ".git")).each do |git|
+      repo_dir = File.dirname(git)
+      out, status = Open3.capture2("git", "-C", repo_dir, "log", "--all", "--author=#{@author}",
+                                   "--since=#{@from.iso8601}", "--until=#{@to.iso8601}",
+                                   "--format=%H%x09%aI%x09%s")
+      next unless status.success?
+
+      out.each_line do |line|
+        sha, date, subject = line.chomp.split("\t", 3)
+        next if pushed.include?(sha) || !in_range?(date) || !seen.add?(sha)
+
+        add(date, "Local commit in #{File.basename(repo_dir)} (not in any PR above): #{subject}")
+      end
+    end
+  end
+
+  def find_workspaces
+    dir = Dir.pwd
+    until dir == "/"
+      return File.join(dir, "workspaces") if File.directory?(File.join(dir, "workspaces", "master"))
+
+      dir = File.dirname(dir)
+    end
+    nil
+  end
+
+  def add(timestamp, text)
+    @entries << Entry.new(Time.parse(timestamp).localtime, text)
+  end
+
+  def render(prs)
+    scope = @org || "all of GitHub"
+    last_day = (@to - 1).to_date
+    lines = ["# GitHub activity: #{scope}", "", "#{@from.to_date} – #{last_day} (#{@user})", ""]
+    @warnings.each { |w| lines << "> ⚠️ #{w}" << "" }
+
+    by_day = @entries.uniq { |e| [e.time, e.text] }.sort_by(&:time).group_by { |e| e.time.to_date }
+    quiet = []
+    (@from.to_date..last_day).each do |day|
+      entries = by_day[day]
+      unless entries
+        quiet << day.strftime("%a %-d %b")
+        next
+      end
+
+      lines << "## #{day.strftime('%A %-d %B')}"
+      entries.each { |e| lines << "- #{e.time.strftime('%H:%M')} #{e.text}" }
+      lines << ""
+    end
+    lines << "No activity: #{quiet.join(', ')}" << "" if quiet.any?
+
+    touched = prs.select { |pr| @entries.any? { |e| e.text.include?("#{short_repo(pr[:repo])}##{pr[:number]}") } }
+    if touched.any?
+      lines << "## Pull requests"
+      touched.each do |pr|
+        lines << "" << "### #{short_repo(pr[:repo])}##{pr[:number]}: #{pr[:title]}"
+        lines << "#{pr[:state]} · by #{pr[:author]} · `#{pr[:head]}` → `#{pr[:base]}` · #{pr[:size]} · #{pluralize(pr[:commits].size, 'commit')}"
+        summary = summary_for(pr)
+        lines << "" << summary if summary
+      end
+    end
+
+    lines.join("\n")
+  end
+
+  def summary_for(pr)
+    paragraph = first_paragraph(pr[:body])
+    paragraph ||= pr[:commits].map { |c| first_paragraph(c.dig("commit", "message").to_s.split("\n", 2)[1]) }.compact.first
+    paragraph&.gsub(/\s*\n\s*/, " ")
+  end
+
+  def first_paragraph(text)
+    text.to_s.strip.split(/\r?\n\s*\r?\n/).first&.strip&.then { |p| p.empty? ? nil : p }
+  end
+
+  def first_line(text)
+    text.to_s.strip.lines.first.to_s.strip
+  end
+
+  def short_repo(repo)
+    @org ? repo.sub("#{@org}/", "") : repo
+  end
+
+  def local(time)
+    time.localtime.strftime("%-d %b %H:%M")
+  end
+
+  def pluralize(count, word)
+    "#{count} #{word}#{'s' unless count == 1}"
+  end
+end
+
+options = { org: nil, local: false, author: "inge@" }
+today = Date.today
+from_date = today - 6
+to_date = today
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: github_report [options]\n\nDefaults to all activity in the last 7 days."
+  opts.on("--since DAYS", "Last N days including today, e.g. 7 or 7d") do |value|
+    from_date = today - (Integer(value.delete_suffix("d")) - 1)
+    to_date = today
+  end
+  opts.on("--from DATE", "First day (YYYY-MM-DD)") { |value| from_date = Date.parse(value) }
+  opts.on("--to DATE", "Last day (YYYY-MM-DD), inclusive") { |value| to_date = Date.parse(value) }
+  opts.on("--org ORG", "Only activity in this organization") { |value| options[:org] = value }
+opts.on("--local", "Also list local commits in workspaces/ that aren't in a PR") { options[:local] = true }
+opts.on("--author PATTERN", "git log --author pattern for --local (default: inge@)") { |value| options[:author] = value }
+end.parse!
+
+abort "--from is after --to" if from_date > to_date
+
+begin
+  GithubReport.new(
+    from: Time.local(from_date.year, from_date.month, from_date.day),
+    to: Time.local((to_date + 1).year, (to_date + 1).month, (to_date + 1).day),
+    org: options[:org],
+    local: options[:local],
+    author: options[:author]
+  ).run
+rescue GithubReport::GhError => e
+  abort e.message
+end
