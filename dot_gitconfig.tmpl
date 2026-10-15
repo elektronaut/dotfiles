@@ -25,6 +25,9 @@
 	path = ~/.gitconfig.make
 [init]
 	defaultBranch = main
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
 {{- if has .chezmoi.hostname (list "Nurula" "Maru") }}
 [github]
 	user = elektronaut

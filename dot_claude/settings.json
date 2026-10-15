@@ -90,7 +90,17 @@
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true
+    "ruby-lsp@claude-plugins-official": true,
+    "humanizer@humanizer": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "humanizer": {
+      "source": {
+        "source": "github",
+        "repo": "blader/humanizer"
+      }
+    }
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
