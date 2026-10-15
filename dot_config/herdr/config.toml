@@ -1,0 +1,32 @@
+onboarding = false
+
+[ui]
+status_indicators = "symbols"
+
+[ui.toast]
+delivery = "system"
+
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+[theme.custom]
+accent = "#93b1d1"
+panel_bg = "#0f1a28"
+sidebar_bg = "reset"
+active_row_bg = "#172334"
+selection_bg = "#24354a"
+surface0 = "#172334"
+surface1 = "#24354a"
+surface_dim = "#3a4a5f"
+overlay0 = "#5f6b7d"
+overlay1 = "#7d889a"
+text = "#d8d5e0"
+subtext0 = "#a9adb9"
+mauve = "#bf92e6"
+green = "#b9c58b"
+yellow = "#e9c77f"
+red = "#be6b68"
+blue = "#93b1d1"
+teal = "#94bcb6"
+peach = "#e0a070"

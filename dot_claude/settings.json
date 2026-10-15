@@ -84,6 +84,7 @@
   "effortLevel": "high",
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
+  "theme": "custom:duskline",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
