@@ -1,0 +1,5 @@
+{{- if eq .chezmoi.hostname "Nurula" -}}
+{{ .chezmoi.homeDir }}/Assistant/vault
+{{- else -}}
+{{ .chezmoi.homeDir }}/Dev/make/vault
+{{- end }}

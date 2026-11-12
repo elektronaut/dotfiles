@@ -17,3 +17,8 @@
     url = "git@github.com:elektronaut/emacs.d.git"
     refreshPeriod = "0"
     pull.args = ["--ff-only"]
+
+[".local/share/claude-config"]
+    type = "git-repo"
+    url = "https://github.com/elektronaut/claude-config.git"
+    refreshPeriod = "0"
