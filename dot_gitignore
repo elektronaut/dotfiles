@@ -16,3 +16,5 @@ mise.local.toml
 .claude
 *.local.md
 .conductor/settings.local.toml
+
+**/.claude/settings.local.json

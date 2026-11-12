@@ -9,5 +9,3 @@ alias deploy="git push; cap production deploy"
 
 alias cm="chezmoi"
 compdef cm=chezmoi
-
-alias pa-session="(cd ~/Documents/Obsidian/PA && claude -n PA)"

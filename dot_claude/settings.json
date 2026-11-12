@@ -21,7 +21,9 @@
       "Bash(git -C * log*)",
       "Bash(git -C * show*)",
       "Bash(git -C * status*)",
+      "Bash(git push:*)",
       "Bash(git show-ref*)",
+      "Bash(gh pr create:*)",
       "Bash(grep:*)",
       "Bash(npm run test:*)",
       "Bash(npx eslint:*)",
@@ -37,7 +39,7 @@
     ],
     "deny": []
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -104,6 +106,11 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "theme": "custom:duskline",
