@@ -29,9 +29,9 @@ plugins+=(docker docker-compose doctl kubectl)
 plugins+=(1password emacs macos brew sublime zsh-autosuggestions)
 {{- end }}
 
-if [[ -f ~/.local/bin/mise ]] ; then
+if (( $+commands[mise] )) ; then
     plugins+=(mise)
-    eval "$(~/.local/bin/mise activate zsh)"
+    eval "$(mise activate zsh)"
 fi
 
 source $ZSH/oh-my-zsh.sh
