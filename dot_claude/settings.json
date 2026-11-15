@@ -91,6 +91,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 /Users/inge/.claude/hooks/git-chain-guard.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

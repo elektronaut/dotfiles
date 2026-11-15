@@ -1,0 +1,31 @@
+#!/bin/sh
+# Global git hooks (core.hooksPath). Each hook name is a symlink to this file.
+# After its own checks it runs the repository's hook of the same name, if any.
+
+name=$(basename "$0")
+
+case "$name" in
+pre-commit)
+  markers=$(git diff --cached --check | grep 'leftover conflict marker')
+  if [ -n "$markers" ]; then
+    echo "pre-commit: refusing to commit leftover conflict markers:" >&2
+    echo "$markers" >&2
+    exit 1
+  fi
+  ;;
+pre-push)
+  for state in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD; do
+    if [ -e "$(git rev-parse --git-path "$state")" ]; then
+      echo "pre-push: refusing to push while an operation is in progress ($state)." >&2
+      echo "Finish it with --continue or --abort, check the result, then push." >&2
+      exit 1
+    fi
+  done
+  ;;
+esac
+
+repo_hook="$(git rev-parse --git-common-dir)/hooks/$name"
+if [ -x "$repo_hook" ]; then
+  exec "$repo_hook" "$@"
+fi
+exit 0
