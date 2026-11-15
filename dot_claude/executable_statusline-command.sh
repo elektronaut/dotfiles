@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export GIT_OPTIONAL_LOCKS=0
+
 input=$(cat)
 
 model=$(echo "$input" | jq -r '.model.display_name // .model.id // "unknown"')
