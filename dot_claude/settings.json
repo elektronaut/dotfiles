@@ -15,7 +15,7 @@
       "Bash(bundle exec rspec:*)",
       "Bash(bundle exec rubocop:*)",
       "Bash(bundle list:*)",
-      "Bash(flis:*)",
+      "Bash(snags:*)",
       "Bash(gem list:*)",
       "Bash(gem search:*)",
       "Bash(git -C * diff*)",
