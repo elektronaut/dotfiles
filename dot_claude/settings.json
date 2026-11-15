@@ -38,7 +38,13 @@
       "WebFetch(domain:logger.rocketjob.io)",
       "WebFetch(domain:www.rfc-editor.org)"
     ],
-    "deny": []
+    "ask": [
+      "Bash(git stash:*)"
+    ],
+    "deny": [
+      "Bash(killall:*)",
+      "Bash(pkill:*)"
+    ]
   },
   "model": "opus",
   "hooks": {
